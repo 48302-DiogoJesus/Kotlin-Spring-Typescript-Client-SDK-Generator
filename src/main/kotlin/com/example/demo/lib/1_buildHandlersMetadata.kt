@@ -1,6 +1,7 @@
 package com.example.demo.lib
 
 import com.example.demo.types.HandlerMetadata
+import com.example.demo.types.TypeDetails
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestParam
@@ -23,15 +24,21 @@ fun buildHandlersMetadata(
         val requestBodyType =
             handler.method.parameters.firstOrNull { it.isAnnotationPresent(RequestBody::class.java) }?.type?.kotlin
 
-        val paramsTypes = mutableMapOf<String, KClass<*>>()
+        val paramsTypes = mutableMapOf<String, TypeDetails>()
         handler.method.parameters
             .filter { it.isAnnotationPresent(PathVariable::class.java) }
-            .forEach { param -> paramsTypes[param.name] = param.type.kotlin }
+            .forEach { param ->
+                val annotationDetail = param.getAnnotation(PathVariable::class.java)
+                paramsTypes[param.name] = TypeDetails(param.type.kotlin, annotationDetail.required)
+            }
 
-        val queryTypes = mutableMapOf<String, KClass<*>>()
+        val queryTypes = mutableMapOf<String, TypeDetails>()
         handler.method.parameters
             .filter { it.isAnnotationPresent(RequestParam::class.java) }
-            .forEach { param -> queryTypes[param.name] = param.type.kotlin }
+            .forEach { param ->
+                val annotationDetail = param.getAnnotation(RequestParam::class.java)
+                queryTypes[param.name] = TypeDetails(param.type.kotlin, annotationDetail.required)
+            }
 
         var responseTypeString: String = handler.method.returnType.typeName
             ?: return@mapNotNull null

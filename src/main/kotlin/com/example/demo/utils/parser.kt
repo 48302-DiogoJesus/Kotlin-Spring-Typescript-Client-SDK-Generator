@@ -1,6 +1,6 @@
 package com.example.demo.utils
 
-import java.io.File
+import com.example.demo.types.TypeDetails
 import java.sql.Date
 import java.sql.Timestamp
 import kotlin.reflect.KClass
@@ -14,47 +14,67 @@ import kotlin.reflect.full.memberProperties
  * - convert kotlin Map to TS object type definition
  * */
 class KotlinDataClassToTypescriptInterfaces() {
-    fun convertFromMapInline(map: Map<String, KClass<*>>): String {
+    private val typesCreated = mutableMapOf<String, String>()
+
+    data class ConversionResult(
+        val result: String,
+        val typesCreated: List<String>
+    )
+
+    /**
+
+     * Currently used for 1 level maps: + params/path variables
+     * */
+    fun fromMap(
+        map: Map<String, TypeDetails>,
+        typeName: String? = null
+    ): ConversionResult {
         val properties = map.entries.joinToString(",\n") { (k, v) ->
-            "\t${k}: ${convertKotlinTypeToTypeScript(v.createType())}"
+            "\t${k}${if (!v.required) "?" else ""}: ${convertKotlinTypeToTypeScript(v.type.createType())}"
         }
-        return "{$properties}"
+        val typesCopy = typesCreated.toMap().values.toList()
+        typesCreated.clear()
+
+        return ConversionResult(
+            if (typeName == null)
+                "{$properties}"
+            else
+                "export interface $typeName {$properties}",
+            typesCopy
+        )
     }
 
-    fun useConvert(
-        outputFilePath: String,
-        block: (convert: (KClass<*>, String?) -> String) -> Unit
-    ) {
-        block(::convert)
-        writeToFile(outputFilePath)
+    fun fromKClass(klass: KClass<*>, typeName: String? = null): ConversionResult {
+        val result = convertInternal(klass, typeName)
+
+        val typesCopy = HashMap(typesCreated).values.toList()
+        typesCreated.clear()
+        return ConversionResult(result, typesCopy)
     }
 
-    private val cachedTypes = mutableMapOf<String, String>()
-
-    private fun convert(kotlinClass: KClass<*>, finalInterfaceName: String? = null): String {
+    private fun convertInternal(
+        kotlinClass: KClass<*>,
+        finalInterfaceName: String? = null,
+    ): String {
         val className = kotlinClass.simpleName
             ?: finalInterfaceName
             ?: throw Error("Class with no name tried to be converted")
 
-        val cachedType = cachedTypes[className]
+        val cachedType = typesCreated[className]
         if (cachedType != null)
             return cachedType
 
         val properties = kotlinClass.memberProperties.joinToString(",\n") {
             val propertyType = it.returnType
             val propertyTypeName =
-                "${convertKotlinTypeToTypeScript(propertyType)} ${if (propertyType.isMarkedNullable) "| null" else ""}"
+                "${convertKotlinTypeToTypeScript(propertyType)} ${
+                    if (propertyType.isMarkedNullable) "| null" else ""
+                }"
             "\t${it.name}: $propertyTypeName"
         }
         val builtType = "export interface $className {\n$properties\n}"
-        cachedTypes[className] = builtType
+        typesCreated[className] = builtType
         return builtType
-    }
-
-    fun writeToFile(filePath: String) {
-        val file = File(filePath)
-        file.writeText(cachedTypes.values.joinToString("\n"))
-        cachedTypes.clear()
     }
 
     private fun convertKotlinTypeToTypeScript(type: KType): String {
@@ -77,14 +97,18 @@ class KotlinDataClassToTypescriptInterfaces() {
             Map::class -> {
                 val keyType = type.arguments.firstOrNull()?.type ?: return "{ [key: string]: any }"
                 val valueType = type.arguments.getOrNull(1)?.type ?: return "{ [key: string]: any }"
-                "{ [key: ${convertKotlinTypeToTypeScript(keyType)}]: ${convertKotlinTypeToTypeScript(valueType)} }"
+                "{ [key: ${convertKotlinTypeToTypeScript(keyType)}]: ${
+                    convertKotlinTypeToTypeScript(
+                        valueType
+                    )
+                } }"
             }
 
             else -> {
                 val nestedClass = (type.classifier as? KClass<*>) ?: return "any"
                 val nestedClassName = nestedClass.simpleName ?: return "any"
                 // Will create an interface for another type
-                convert(nestedClass).replace(nestedClass.qualifiedName!!, nestedClassName)
+                convertInternal(nestedClass).replace(nestedClass.qualifiedName!!, nestedClassName)
                 nestedClassName
             }
         }

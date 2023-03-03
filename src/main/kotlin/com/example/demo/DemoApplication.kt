@@ -11,26 +11,30 @@ import org.springframework.web.method.HandlerMethod
 @RequestMapping("/api/users")
 class Users {
 
-    @PostMapping("/")
-    fun create(
-        @RequestBody requestData: RequestData,
-        @PathVariable id: String,
-        @RequestParam search: String,
-        @RequestParam orderBy: Boolean
-    ): ResponseEntity<ResponseData> {
-        // process request data, params, and query parameters
-        println("${requestData}, ${id}, $search, $orderBy")
-        return ResponseEntity.ok().body(ResponseData(output = true))
-    }
+    /* @PostMapping("/")
+     fun first(
+         @RequestBody requestData: RequestData,
+         @PathVariable id: String,
+         @RequestParam search: String,
+         @RequestParam orderBy: Boolean
+     ): ResponseEntity<ResponseData> =
+         ResponseEntity.ok().body(ResponseData(output = true))*/
 
-    @GetMapping("/{id}")
-    fun getById(
-        @PathVariable id: String,
-    ): ResponseEntity<Unit> {
-        // process request data, params, and query parameters
-        println("${id}")
-        return ResponseEntity.ok().body(Unit)
-    }
+    @PostMapping("/{a}/one/{b}/two")
+    fun second(
+        @RequestBody requestData: RequestData,
+        @PathVariable a: String,
+        @PathVariable b: String,
+        @RequestParam(required = false) search: String?,
+        @RequestParam orderBy: Boolean
+    ): ResponseEntity<ResponseData> =
+        ResponseEntity.ok().body(ResponseData(output = true))
+
+    /* @GetMapping("/{id}")
+     fun third(
+         @PathVariable id: String,
+     ): ResponseEntity<Unit> =
+         ResponseEntity.ok().body(Unit)*/
 }
 
 data class RequestData(val data: String)

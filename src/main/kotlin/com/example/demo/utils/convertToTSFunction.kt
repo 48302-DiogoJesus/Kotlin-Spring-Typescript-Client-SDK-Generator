@@ -5,18 +5,18 @@ import com.example.demo.types.HandlerMetadata
 fun convertToTSFunction(
     handlerMD: HandlerMetadata
 ): String {
-    val ktToTSMapConverter = KotlinDataClassToTypescriptInterfaces()::convertFromMapInline
+    val tsTypeGenerator = KotlinDataClassToTypescriptInterfaces()
     val stringBuilder = StringBuilder()
 
     val paramsTSType = if (handlerMD.paramsType.isEmpty())
         null // handler doesn't need params/path variables
     else
-        "params: ${ktToTSMapConverter(handlerMD.paramsType)},"
+        "params: ${tsTypeGenerator.fromMap(handlerMD.paramsType).result},"
 
     val queryStringTSType = if (handlerMD.queryStringType.isEmpty())
         null // handler doesn't need query string variables
     else
-        "query: ${ktToTSMapConverter(handlerMD.queryStringType)},"
+        "query: ${tsTypeGenerator.fromMap(handlerMD.queryStringType).result},"
 
     val requestBodyTSType = if (handlerMD.requestBodyType == null)
         null// handler doesn't need request body
