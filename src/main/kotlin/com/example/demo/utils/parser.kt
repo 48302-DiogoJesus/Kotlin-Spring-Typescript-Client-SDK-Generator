@@ -1,30 +1,42 @@
-package com.example.demo
+package com.example.demo.utils
 
 import java.io.File
 import java.sql.Date
 import java.sql.Timestamp
 import kotlin.reflect.KClass
 import kotlin.reflect.KType
+import kotlin.reflect.full.createType
 import kotlin.reflect.full.memberProperties
 
-class KotlinDataClassToTypescriptInterfaces(
-    val outputFilePath: String?
-) {
-    val typesToWrite = mutableMapOf<String, String>()
-
+/**
+ * Something that can:
+ * - convert kotlin data classes to TS interfaces
+ * - convert kotlin Map to TS object type definition
+ * */
+class KotlinDataClassToTypescriptInterfaces() {
     fun convertFromMapInline(map: Map<String, KClass<*>>): String {
-        val properties = map.values.joinToString(",\n") {
-            "\t${it.simpleName}: ${convert(it)}"
+        val properties = map.entries.joinToString(",\n") { (k, v) ->
+            "\t${k}: ${convertKotlinTypeToTypeScript(v.createType())}"
         }
         return "{$properties}"
     }
 
-    fun convert(kotlinClass: KClass<*>, finalInterfaceName: String? = null): String {
+    fun useConvert(
+        outputFilePath: String,
+        block: (convert: (KClass<*>, String?) -> String) -> Unit
+    ) {
+        block(::convert)
+        writeToFile(outputFilePath)
+    }
+
+    private val cachedTypes = mutableMapOf<String, String>()
+
+    private fun convert(kotlinClass: KClass<*>, finalInterfaceName: String? = null): String {
         val className = kotlinClass.simpleName
             ?: finalInterfaceName
             ?: throw Error("Class with no name tried to be converted")
 
-        val cachedType = typesToWrite[className]
+        val cachedType = cachedTypes[className]
         if (cachedType != null)
             return cachedType
 
@@ -34,18 +46,15 @@ class KotlinDataClassToTypescriptInterfaces(
                 "${convertKotlinTypeToTypeScript(propertyType)} ${if (propertyType.isMarkedNullable) "| null" else ""}"
             "\t${it.name}: $propertyTypeName"
         }
-        val builtType = "interface $className {\n$properties\n}"
-        typesToWrite[className] = builtType
+        val builtType = "export interface $className {\n$properties\n}"
+        cachedTypes[className] = builtType
         return builtType
     }
 
-    fun write() {
-        if (outputFilePath == null)
-            throw Error("No file specified to write to")
-
-        val file = File(outputFilePath)
-        file.writeText(typesToWrite.values.joinToString())
-        typesToWrite.clear()
+    fun writeToFile(filePath: String) {
+        val file = File(filePath)
+        file.writeText(cachedTypes.values.joinToString("\n"))
+        cachedTypes.clear()
     }
 
     private fun convertKotlinTypeToTypeScript(type: KType): String {
