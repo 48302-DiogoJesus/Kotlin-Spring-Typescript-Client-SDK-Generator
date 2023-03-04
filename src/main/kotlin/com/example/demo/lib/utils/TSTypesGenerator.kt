@@ -1,9 +1,11 @@
 package com.example.demo.lib.utils
 
+import com.example.demo.lib.types.TypeName
 import java.sql.Date
 import java.sql.Timestamp
 import kotlin.reflect.KClass
 import kotlin.reflect.KType
+import kotlin.reflect.full.createType
 import kotlin.reflect.full.memberProperties
 
 /**
@@ -16,7 +18,7 @@ class TSTypesGenerator() {
 
     data class ConversionResult(
         val result: String,
-        val typesCreated: List<String>
+        val typesCreated: Map<TypeName, String>
     )
 
     /**
@@ -27,9 +29,9 @@ class TSTypesGenerator() {
         typeName: String? = null
     ): ConversionResult {
         val properties = map.entries.joinToString(",\n") { (propName, type) ->
-            "\t${propName}${if (type.isMarkedNullable) "?" else ""}: ${convertKotlinTypeToTypeScript(type)}"
+            "\t${propName}${if (type.isMarkedNullable) "?" else ""}: ${convertKTypeToTSType(type)}"
         }
-        val typesCopy = typesCreated.toMap().values.toList()
+        val typesCopy = typesCreated.toMap()
         typesCreated.clear()
 
         return ConversionResult(
@@ -42,14 +44,17 @@ class TSTypesGenerator() {
     }
 
     fun fromKClass(klass: KClass<*>, typeName: String? = null): ConversionResult {
-        val result = convertInternal(klass, typeName)
+        val result = if (!isUserType(klass))
+            convertKTypeToTSType(klass.createType())
+        else
+            convertKClassInternal(klass, typeName)
 
-        val typesCopy = HashMap(typesCreated).values.toList()
+        val typesCopy = typesCreated.toMap()
         typesCreated.clear()
         return ConversionResult(result, typesCopy)
     }
 
-    private fun convertInternal(
+    private fun convertKClassInternal(
         kotlinClass: KClass<*>,
         finalInterfaceName: String? = null,
     ): String {
@@ -64,17 +69,18 @@ class TSTypesGenerator() {
         val properties = kotlinClass.memberProperties.joinToString(",\n") {
             val propertyType = it.returnType
             val propertyTypeName =
-                "${convertKotlinTypeToTypeScript(propertyType)} ${
+                "${convertKTypeToTSType(propertyType)} ${
                     if (propertyType.isMarkedNullable) "| null" else ""
                 }"
-            "\t${it.name}: $propertyTypeName"
+
+            "\t${it.name}${if (propertyType.isMarkedNullable) "?" else ""}: $propertyTypeName"
         }
         val builtType = "export interface $className {\n$properties\n}"
         typesCreated[className] = builtType
         return builtType
     }
 
-    private fun convertKotlinTypeToTypeScript(type: KType): String {
+    private fun convertKTypeToTSType(type: KType): String {
         return when (type.classifier) {
             String::class -> "string"
             Int::class -> "number"
@@ -86,16 +92,16 @@ class TSTypesGenerator() {
             List::class -> {
                 val nestedType = type.arguments.firstOrNull()?.type ?: return "any[]"
                 if (nestedType.isMarkedNullable)
-                    "(${convertKotlinTypeToTypeScript(nestedType)} | null)[]"
+                    "(${convertKTypeToTSType(nestedType)} | null)[]"
                 else
-                    "${convertKotlinTypeToTypeScript(nestedType)}[]"
+                    "${convertKTypeToTSType(nestedType)}[]"
             }
 
             Map::class -> {
                 val keyType = type.arguments.firstOrNull()?.type ?: return "{ [key: string]: any }"
                 val valueType = type.arguments.getOrNull(1)?.type ?: return "{ [key: string]: any }"
-                "{ [key: ${convertKotlinTypeToTypeScript(keyType)}]: ${
-                    convertKotlinTypeToTypeScript(
+                "{ [key: ${convertKTypeToTSType(keyType)}]: ${
+                    convertKTypeToTSType(
                         valueType
                     )
                 } }"
@@ -105,10 +111,24 @@ class TSTypesGenerator() {
                 val nestedClass = (type.classifier as? KClass<*>) ?: return "any"
                 val nestedClassName = nestedClass.simpleName ?: return "any"
                 // Will create an interface for another type
-                convertInternal(nestedClass).replace(nestedClass.qualifiedName!!, nestedClassName)
+                convertKClassInternal(nestedClass).replace(nestedClass.qualifiedName!!, nestedClassName)
                 nestedClassName
             }
         }
     }
 }
 
+fun isUserType(type: KClass<*>): Boolean {
+    return when (type) {
+        String::class -> false
+        Boolean::class -> false
+        Int::class -> false
+        Double::class -> false
+        Long::class -> false
+        Date::class -> false
+        Timestamp::class -> false
+        List::class -> false
+        Map::class -> false
+        else -> true
+    }
+}

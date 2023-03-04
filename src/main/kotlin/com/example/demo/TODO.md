@@ -1,8 +1,16 @@
-EDGE CASES (test Timestamp and Date to TS Date, requestbody that is a
-map or a data class with a property that is a map, request body being primitive):
+EDGE CASES (
+test Timestamp and Date to TS Date
+can Response type be Unit??
+):
 
-[ ] Look for edge cases
+[ ] Increase spring example's complexity
 
+[ ] Write README.md saying what this is
+[ ] Write usage instructions
+[ ] Build jar and try it
+
+[x] Could optimize and keep mutating the handlers metadata as they pass though the steps
+[x] Look for some edge cases
 [x] Write basic tests
 [x] Add support for ResponseEntity<ResponseBody | ErrorResponseBody> in kotlin and then a converter to TS (in the
 types.d.ts file and used as return type for the promises)

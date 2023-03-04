@@ -1,5 +1,8 @@
 package com.example.demo.testSubjects
 
+import com.example.demo.lib.utils.TSTypesGenerator
+import kotlin.reflect.full.memberProperties
+
 data class PersonWithoutFriends(
     val id: Int,
     val name: String,
