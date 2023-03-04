@@ -4,3 +4,6 @@ export interface RequestData {
 export interface ResponseData {
 	output: boolean 
 }
+export interface ErrorType {
+	message: string 
+}

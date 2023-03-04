@@ -1,6 +1,6 @@
 import UserTypes from "./UserTypes";
 import { ServerResponse } from "./ServerResponse";
-import { replacePathAndQueryVariables } from "./utils";
+import { replacePathAndQueryVariables } from "./Utils";
 
 export default function BuildSDK(apiBaseUrl: string) { return {
 	Users: {

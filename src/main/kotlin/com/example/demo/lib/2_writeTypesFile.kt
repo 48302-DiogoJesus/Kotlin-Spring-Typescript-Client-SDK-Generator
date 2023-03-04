@@ -1,7 +1,7 @@
 package com.example.demo.lib
 
-import com.example.demo.types.HandlerMetadata
-import com.example.demo.utils.KotlinDataClassToTypescriptInterfaces
+import com.example.demo.lib.types.HandlerMetadata
+import com.example.demo.lib.utils.KotlinDataClassToTypescriptInterfaces
 import java.io.File
 
 fun writeTypesFile(handlersMetadata: List<HandlerMetadata>, typesFilePath: String) {
@@ -21,8 +21,13 @@ fun writeTypesFile(handlersMetadata: List<HandlerMetadata>, typesFilePath: Strin
 
         // Response is required, even if its Unit (ts void)
         // If it's Unit don't generate a type definition for it
-        if (handler.responseBodyType != Unit::class) {
-            val res = tsTypeGenerator.fromKClass(handler.responseBodyType, handler.responseBodyType.simpleName)
+        if (handler.successResponseType != Unit::class) {
+            val res = tsTypeGenerator.fromKClass(handler.successResponseType, handler.successResponseType.simpleName)
+            res.typesCreated.forEach { writtenTypes.add(it) }
+        }
+
+        if (handler.errorResponseType != Unit::class) {
+            val res = tsTypeGenerator.fromKClass(handler.errorResponseType, handler.errorResponseType.simpleName)
             res.typesCreated.forEach { writtenTypes.add(it) }
         }
     }

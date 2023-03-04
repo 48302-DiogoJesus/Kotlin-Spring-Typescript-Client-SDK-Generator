@@ -1,13 +1,12 @@
 package com.example.demo.lib
 
-import com.example.demo.types.HandlerMetadata
-import com.example.demo.types.TypeDetails
+import com.example.demo.lib.types.HandlerMetadata
+import com.example.demo.lib.types.TypeDetails
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.servlet.mvc.method.RequestMappingInfoHandlerMapping
 import java.lang.reflect.ParameterizedType
-import kotlin.reflect.KClass
 
 fun buildHandlersMetadata(
     requestMappingHandlerMapping: RequestMappingInfoHandlerMapping
@@ -40,14 +39,20 @@ fun buildHandlersMetadata(
                 queryTypes[param.name] = TypeDetails(param.type.kotlin, annotationDetail.required)
             }
 
-        var responseTypeString: String = handler.method.returnType.typeName
+        val completeResponseType: String = handler.method.returnType.typeName
             ?: return@mapNotNull null
 
-        if (responseTypeString.contains("ResponseEntity"))
-            responseTypeString =
-                (handler.method.genericReturnType as ParameterizedType).actualTypeArguments[0].typeName
+        if (!completeResponseType.contains("ResponseEntity")) {
+            throw Error("Your handlers should return ResponseEntity<HandlerResponse<{SuccessBodyType}, {ErrorBodyType}>>")
+        }
 
-        val responseBodyType: KClass<*> = Class.forName(responseTypeString).kotlin
+        val matchResult =
+            "<(.+?), (.+?)>".toRegex()
+                .find((handler.method.genericReturnType as ParameterizedType).actualTypeArguments[0].typeName)
+                ?: throw Error("Your handlers should return ResponseEntity<HandlerResponse<{SuccessBodyType}, {ErrorBodyType}>>")
+
+        val successResponseType = Class.forName(matchResult.groupValues[1]).kotlin
+        val errorResponseType = Class.forName(matchResult.groupValues[2]).kotlin
 
         return@mapNotNull HandlerMetadata(
             controllerName,
@@ -57,6 +62,7 @@ fun buildHandlersMetadata(
             paramsTypes,
             queryTypes,
             requestBodyType,
-            responseBodyType
+            successResponseType,
+            errorResponseType
         )
     }

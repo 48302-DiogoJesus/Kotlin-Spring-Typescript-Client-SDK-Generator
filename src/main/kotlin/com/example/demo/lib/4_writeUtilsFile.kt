@@ -2,8 +2,11 @@ package com.example.demo.lib
 
 import java.io.File
 
-fun writeUtilsFile(outFilePath: String) {
-    File(outFilePath).writeText(
+fun writeDependencies(
+    utilsFilePath: String,
+    serverResponseTypeFilePath: String
+) {
+    File(utilsFilePath).writeText(
         "export function replacePathAndQueryVariables(\n" +
                 "  url: string,\n" +
                 "  variables?: { [key: string]: any },\n" +
@@ -27,5 +30,19 @@ fun writeUtilsFile(outFilePath: String) {
                 "\n" +
                 "  return result;\n" +
                 "}"
+    )
+
+    File(serverResponseTypeFilePath).writeText(
+        "type SuccessResponse<S> = {\n" +
+                "  isSuccess: true;\n" +
+                "  data: S;\n" +
+                "};\n" +
+                "\n" +
+                "type ErrorResponse<E> = {\n" +
+                "  isSuccess: false;\n" +
+                "  error: E;\n" +
+                "};\n" +
+                "\n" +
+                "export type ServerResponse<S, E> = SuccessResponse<S> | ErrorResponse<E>;\n"
     )
 }

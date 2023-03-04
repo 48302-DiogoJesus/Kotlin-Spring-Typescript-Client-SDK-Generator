@@ -1,6 +1,6 @@
-package com.example.demo.utils
+package com.example.demo.lib.utils
 
-import com.example.demo.types.HandlerMetadata
+import com.example.demo.lib.types.HandlerMetadata
 
 fun convertToTSFunction(
     handlerMD: HandlerMetadata
@@ -19,15 +19,20 @@ fun convertToTSFunction(
         "query: ${tsTypeGenerator.fromMap(handlerMD.queryStringType).result},"
 
     val requestBodyTSType = if (handlerMD.requestBodyType == null)
-        null// handler doesn't need request body
+        null // handler doesn't need request body
     else
-        "body: ${handlerMD.requestBodyType.simpleName},"
+        "body: UserTypes.${handlerMD.requestBodyType.simpleName},"
 
     // ! Watch out for ResponseEntity<Primitives>. Might already work but try it out
-    val responseBodyType = if (handlerMD.responseBodyType == Unit::class)
+    val successResponseType = if (handlerMD.successResponseType == Unit::class)
         "void"
     else
-        handlerMD.responseBodyType.simpleName
+        handlerMD.successResponseType.simpleName
+
+    val errorResponseType = if (handlerMD.errorResponseType == Unit::class)
+        "void"
+    else
+        handlerMD.errorResponseType.simpleName
 
     // Builds function signature
     stringBuilder.appendLine("async (args: { ")
@@ -39,16 +44,16 @@ fun convertToTSFunction(
     if (requestBodyTSType != null)
         stringBuilder.appendLine("\t${requestBodyTSType}")
 
-    stringBuilder.appendLine(" }): Promise<$responseBodyType> => {")
+    stringBuilder.appendLine(" }): Promise<ServerResponse<UserTypes.$successResponseType, UserTypes.$errorResponseType>> => {")
 
     // Builds function body
-    if (responseBodyType == "void")
+    if (successResponseType == "void" && errorResponseType == "void")
         stringBuilder.appendLine("\tawait fetch(")
     else
         stringBuilder.appendLine("\treturn fetch(")
 
     stringBuilder.appendLine(
-        "\t\treplacePathAndQueryVariables(\"HARDCODED_BASE_URL${handlerMD.path}\", " +
+        "\t\treplacePathAndQueryVariables(`\${apiBaseUrl}${handlerMD.path}`, " +
                 "${if (paramsTSType != null) "args.params" else "undefined"}, " +
                 (if (queryStringTSType != null) "args.query" else "undefined")
                 + "),"
@@ -64,7 +69,7 @@ fun convertToTSFunction(
 
     stringBuilder.appendLine("\t)")
 
-    if (responseBodyType != "void")
+    if (successResponseType != "void" || errorResponseType != "void")
         stringBuilder.appendLine("\t\t.then(res => res.json())")
 
     stringBuilder.appendLine("}")

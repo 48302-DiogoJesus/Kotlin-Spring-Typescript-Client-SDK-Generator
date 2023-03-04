@@ -1,6 +1,6 @@
-package com.example.demo.utils
+package com.example.demo.lib.utils
 
-import com.example.demo.types.TypeDetails
+import com.example.demo.lib.types.TypeDetails
 import java.sql.Date
 import java.sql.Timestamp
 import kotlin.reflect.KClass

@@ -1,4 +1,4 @@
-package com.example.demo.types
+package com.example.demo.lib.types
 
 import org.springframework.web.bind.annotation.RequestMethod
 import kotlin.reflect.KClass
@@ -19,5 +19,7 @@ data class HandlerMetadata(
     val paramsType: Map<String, TypeDetails>,
     val queryStringType: Map<String, TypeDetails>,
     val requestBodyType: KClass<*>?,
-    val responseBodyType: KClass<*>
+
+    val successResponseType: KClass<*>,
+    val errorResponseType: KClass<*>
 )
