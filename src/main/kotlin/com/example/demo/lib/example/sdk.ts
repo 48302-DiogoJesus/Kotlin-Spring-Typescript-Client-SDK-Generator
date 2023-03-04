@@ -1,6 +1,6 @@
 import UserTypes from "./UserTypes";
 import { ServerResponse } from "./ServerResponse";
-import { replacePathAndQueryVariables } from "./utils";
+import { replacePathAndQueryVariables } from "./Utils";
 
 export default function BuildSDK(apiBaseUrl: string) { return {
 	Users: {
@@ -10,8 +10,8 @@ export default function BuildSDK(apiBaseUrl: string) { return {
 	query: {	search?: string,
 	orderBy: boolean},
 	body: UserTypes.RequestData,
- }): Promise<ServerResponse<UserTypes.ResponseData, UserTypes.ErrorType>> => {
-	return fetch(
+ }): Promise<ServerResponse<UserTypes.ResponseData, UserTypes.ErrorType>> => 
+	fetch(
 		replacePathAndQueryVariables(`${apiBaseUrl}/api/users/{a}/one/{b}/two`, args.params, args.query),
 		{
 			headers: {"Content-Type": "application/json"},
@@ -19,7 +19,6 @@ export default function BuildSDK(apiBaseUrl: string) { return {
 		}
 	)
 		.then(res => res.json())
-}
 ,
 	},
 }}

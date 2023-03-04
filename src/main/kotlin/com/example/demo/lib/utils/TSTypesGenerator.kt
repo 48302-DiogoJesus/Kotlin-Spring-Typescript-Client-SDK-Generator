@@ -1,11 +1,9 @@
 package com.example.demo.lib.utils
 
-import com.example.demo.lib.types.TypeDetails
 import java.sql.Date
 import java.sql.Timestamp
 import kotlin.reflect.KClass
 import kotlin.reflect.KType
-import kotlin.reflect.full.createType
 import kotlin.reflect.full.memberProperties
 
 /**
@@ -13,7 +11,7 @@ import kotlin.reflect.full.memberProperties
  * - convert kotlin data classes to TS interfaces
  * - convert kotlin Map to TS object type definition
  * */
-class KotlinDataClassToTypescriptInterfaces() {
+class TSTypesGenerator() {
     private val typesCreated = mutableMapOf<String, String>()
 
     data class ConversionResult(
@@ -22,15 +20,14 @@ class KotlinDataClassToTypescriptInterfaces() {
     )
 
     /**
-
      * Currently used for 1 level maps: + params/path variables
      * */
     fun fromMap(
-        map: Map<String, TypeDetails>,
+        map: Map<String, KType>,
         typeName: String? = null
     ): ConversionResult {
-        val properties = map.entries.joinToString(",\n") { (k, v) ->
-            "\t${k}${if (!v.required) "?" else ""}: ${convertKotlinTypeToTypeScript(v.type.createType())}"
+        val properties = map.entries.joinToString(",\n") { (propName, type) ->
+            "\t${propName}${if (type.isMarkedNullable) "?" else ""}: ${convertKotlinTypeToTypeScript(type)}"
         }
         val typesCopy = typesCreated.toMap().values.toList()
         typesCreated.clear()

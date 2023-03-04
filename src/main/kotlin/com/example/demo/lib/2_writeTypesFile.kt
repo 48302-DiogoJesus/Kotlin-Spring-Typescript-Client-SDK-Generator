@@ -1,7 +1,7 @@
 package com.example.demo.lib
 
 import com.example.demo.lib.types.HandlerMetadata
-import com.example.demo.lib.utils.KotlinDataClassToTypescriptInterfaces
+import com.example.demo.lib.utils.TSTypesGenerator
 import java.io.File
 
 fun writeTypesFile(handlersMetadata: List<HandlerMetadata>, typesFilePath: String) {
@@ -10,7 +10,7 @@ fun writeTypesFile(handlersMetadata: List<HandlerMetadata>, typesFilePath: Strin
 
     val writtenTypes: MutableSet<String> = mutableSetOf()
 
-    val tsTypeGenerator = KotlinDataClassToTypescriptInterfaces()
+    val tsTypeGenerator = TSTypesGenerator()
     handlersMetadata.forEach { handler ->
         if (handler.requestBodyType != null) {
             // Request body is needed for this handler

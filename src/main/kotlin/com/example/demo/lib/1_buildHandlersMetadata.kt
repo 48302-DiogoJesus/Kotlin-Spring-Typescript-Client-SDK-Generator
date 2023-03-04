@@ -1,12 +1,18 @@
 package com.example.demo.lib
 
 import com.example.demo.lib.types.HandlerMetadata
-import com.example.demo.lib.types.TypeDetails
+import org.jetbrains.annotations.NotNull
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.servlet.mvc.method.RequestMappingInfoHandlerMapping
+import java.lang.reflect.Parameter
 import java.lang.reflect.ParameterizedType
+import java.lang.reflect.Type
+import java.lang.reflect.WildcardType
+import kotlin.reflect.KClass
+import kotlin.reflect.KType
+import kotlin.reflect.full.createType
 
 fun buildHandlersMetadata(
     requestMappingHandlerMapping: RequestMappingInfoHandlerMapping
@@ -23,20 +29,18 @@ fun buildHandlersMetadata(
         val requestBodyType =
             handler.method.parameters.firstOrNull { it.isAnnotationPresent(RequestBody::class.java) }?.type?.kotlin
 
-        val paramsTypes = mutableMapOf<String, TypeDetails>()
+        val paramsTypes = mutableMapOf<String, KType>()
         handler.method.parameters
-            .filter { it.isAnnotationPresent(PathVariable::class.java) }
-            .forEach { param ->
-                val annotationDetail = param.getAnnotation(PathVariable::class.java)
-                paramsTypes[param.name] = TypeDetails(param.type.kotlin, annotationDetail.required)
+            .mapNotNull { it.getAnnotation(PathVariable::class.java)?.let { annotation -> it to annotation } }
+            .forEach { (param, annotation) ->
+                paramsTypes[param.name] = param.type.kotlin.createType(nullable = !annotation.required)
             }
 
-        val queryTypes = mutableMapOf<String, TypeDetails>()
+        val queryTypes = mutableMapOf<String, KType>()
         handler.method.parameters
-            .filter { it.isAnnotationPresent(RequestParam::class.java) }
-            .forEach { param ->
-                val annotationDetail = param.getAnnotation(RequestParam::class.java)
-                queryTypes[param.name] = TypeDetails(param.type.kotlin, annotationDetail.required)
+            .mapNotNull { it.getAnnotation(RequestParam::class.java)?.let { annotation -> it to annotation } }
+            .forEach { (param, annotation) ->
+                queryTypes[param.name] = param.type.kotlin.createType(nullable = !annotation.required);
             }
 
         val completeResponseType: String = handler.method.returnType.typeName

@@ -5,7 +5,7 @@ import com.example.demo.lib.types.HandlerMetadata
 fun convertToTSFunction(
     handlerMD: HandlerMetadata
 ): String {
-    val tsTypeGenerator = KotlinDataClassToTypescriptInterfaces()
+    val tsTypeGenerator = TSTypesGenerator()
     val stringBuilder = StringBuilder()
 
     val paramsTSType = if (handlerMD.paramsType.isEmpty())
@@ -44,14 +44,10 @@ fun convertToTSFunction(
     if (requestBodyTSType != null)
         stringBuilder.appendLine("\t${requestBodyTSType}")
 
-    stringBuilder.appendLine(" }): Promise<ServerResponse<UserTypes.$successResponseType, UserTypes.$errorResponseType>> => {")
+    stringBuilder.appendLine(" }): Promise<ServerResponse<UserTypes.$successResponseType, UserTypes.$errorResponseType>> => ")
 
     // Builds function body
-    if (successResponseType == "void" && errorResponseType == "void")
-        stringBuilder.appendLine("\tawait fetch(")
-    else
-        stringBuilder.appendLine("\treturn fetch(")
-
+    stringBuilder.appendLine("\tfetch(")
     stringBuilder.appendLine(
         "\t\treplacePathAndQueryVariables(`\${apiBaseUrl}${handlerMD.path}`, " +
                 "${if (paramsTSType != null) "args.params" else "undefined"}, " +
@@ -59,20 +55,15 @@ fun convertToTSFunction(
                 + "),"
     )
 
-    // Builds fetch request body
     if (requestBodyTSType != null) {
+        // Builds request body if it exists
         stringBuilder.appendLine("\t\t{")
         stringBuilder.appendLine("\t\t\theaders: {\"Content-Type\": \"application/json\"},")
         stringBuilder.appendLine("\t\t\tbody: JSON.stringify(args.body)")
         stringBuilder.appendLine("\t\t}")
     }
-
     stringBuilder.appendLine("\t)")
-
-    if (successResponseType != "void" || errorResponseType != "void")
-        stringBuilder.appendLine("\t\t.then(res => res.json())")
-
-    stringBuilder.appendLine("}")
+    stringBuilder.appendLine("\t\t.then(res => res.json())")
 
     return stringBuilder.toString()
 }
