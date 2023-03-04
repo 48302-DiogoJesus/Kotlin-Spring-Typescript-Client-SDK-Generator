@@ -5,6 +5,8 @@ import com.example.demo.lib.utils.ConvertToTSFunctionHandler
 import com.example.demo.lib.utils.TypeInformation
 import org.springframework.web.servlet.mvc.method.RequestMappingInfoHandlerMapping
 import java.io.File
+import java.time.Instant
+import java.util.*
 
 fun generateTypescriptSDKFromSpringHandlers(
     requestMappingHandlerMapping: RequestMappingInfoHandlerMapping,

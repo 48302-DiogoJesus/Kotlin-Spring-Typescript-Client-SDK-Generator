@@ -1,10 +1,6 @@
-EDGE CASES (
-test Timestamp and Date to TS Date
-can Response type be Unit??
-):
+[x] complete system test with Timestamp to Date DIRECTLY
 
 [ ] Increase spring example's complexity
-
 [ ] Write README.md saying what this is
 [ ] Write usage instructions
 [ ] Build jar and try it

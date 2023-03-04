@@ -1,5 +1,6 @@
 package com.example.demo.lib.utils
 
+import org.springframework.web.bind.annotation.RequestMethod
 import kotlin.reflect.KClass
 import kotlin.reflect.KType
 
@@ -11,6 +12,7 @@ data class TypeInformation(
 data class ConvertToTSFunctionHandler(
     val path: String,
     val functionName: String,
+    val method: RequestMethod,
 
     val paramsType: Map<String, KType>?,
     val queryStringType: Map<String, KType>?,
@@ -79,13 +81,18 @@ fun convertToTSFunction(
                 + "),"
     )
 
+    stringBuilder.appendLine("\t\t{")
+
+    stringBuilder.appendLine("\t\t\tmethod: \"${handlerMD.method}\",")
+
     if (handlerMD.requestBodyType != null) {
         // Builds request body if it exists
-        stringBuilder.appendLine("\t\t{")
         stringBuilder.appendLine("\t\t\theaders: {\"Content-Type\": \"application/json\"},")
         stringBuilder.appendLine("\t\t\tbody: JSON.stringify(args.body)")
-        stringBuilder.appendLine("\t\t}")
     }
+
+    stringBuilder.appendLine("\t\t}")
+
     stringBuilder.appendLine("\t)")
     stringBuilder.appendLine("\t\t.then(res => res.json())")
 

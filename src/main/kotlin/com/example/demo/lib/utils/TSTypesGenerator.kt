@@ -3,6 +3,7 @@ package com.example.demo.lib.utils
 import com.example.demo.lib.types.TypeName
 import java.sql.Date
 import java.sql.Timestamp
+import java.time.Instant
 import kotlin.reflect.KClass
 import kotlin.reflect.KType
 import kotlin.reflect.full.createType
@@ -83,12 +84,16 @@ class TSTypesGenerator() {
     private fun convertKTypeToTSType(type: KType): String {
         return when (type.classifier) {
             String::class -> "string"
+            // ! Conversion not tested
+            Timestamp::class -> "Date"
+            Date::class -> "Date"
+            Char::class -> "string"
             Int::class -> "number"
             Long::class -> "number"
+            Float::class -> "number"
             Double::class -> "number"
+            Byte::class -> "number"
             Boolean::class -> "boolean"
-            Date::class -> "Date"
-            Timestamp::class -> "Date"
             List::class -> {
                 val nestedType = type.arguments.firstOrNull()?.type ?: return "any[]"
                 if (nestedType.isMarkedNullable)
@@ -121,12 +126,16 @@ class TSTypesGenerator() {
 fun isUserType(type: KClass<*>): Boolean {
     return when (type) {
         String::class -> false
-        Boolean::class -> false
-        Int::class -> false
-        Double::class -> false
-        Long::class -> false
-        Date::class -> false
+        // ! Conversion not tested
         Timestamp::class -> false
+        Date::class -> false
+        Char::class -> false
+        Int::class -> false
+        Long::class -> false
+        Float::class -> false
+        Double::class -> false
+        Byte::class -> false
+        Boolean::class -> false
         List::class -> false
         Map::class -> false
         else -> true

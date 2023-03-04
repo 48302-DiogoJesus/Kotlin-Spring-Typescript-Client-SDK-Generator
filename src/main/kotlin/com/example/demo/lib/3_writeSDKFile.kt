@@ -20,6 +20,7 @@ fun writeSDKFile(
                     ConvertToTSFunctionHandler(
                         path = handler.path,
                         functionName = handler.functionName,
+                        method = handler.method,
                         paramsType = handler.paramsType.ifEmpty { null },
                         queryStringType = handler.queryStringType.ifEmpty { null },
                         requestBodyType = if (handler.requestBodyType == null)
