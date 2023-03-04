@@ -1,8 +1,12 @@
 package com.example.demo.lib.types
 
+import com.example.demo.exampleSpringApplication.utils.ErrorFormat
 import org.springframework.http.ResponseEntity
 
-data class HandlerResponse<S, E> private constructor(
+// If the API has a global error format it's more readable/concise to fix it like this
+typealias HandlerResponseType<S> = ResponseEntity<HandlerResponse<S, ErrorFormat>>
+
+class HandlerResponse<S, E> private constructor(
     val isSuccess: Boolean,
     val data: S?,
     val error: E?,
@@ -13,7 +17,7 @@ data class HandlerResponse<S, E> private constructor(
                 .status(statusCode)
                 .body(HandlerResponse<S, E>(true, data, null))
 
-        fun <S, E> error(error: E, statusCode: Int) =
+        fun <S, E> error(statusCode: Int, error: E) =
             ResponseEntity
                 .status(statusCode)
                 .body(HandlerResponse<S, E>(true, null, error))

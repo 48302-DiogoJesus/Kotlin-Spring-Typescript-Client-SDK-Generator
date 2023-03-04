@@ -1,4 +1,4 @@
-package com.example.demo
+package com.example.demo.exampleSpringApplication
 
 import com.example.demo.lib.*
 import org.springframework.stereotype.Component
@@ -12,7 +12,10 @@ import org.springframework.web.servlet.mvc.method.RequestMappingInfoHandlerMappi
 class TypescriptSDKGenerator(requestMappingHandlerMapping: RequestMappingInfoHandlerMapping) {
     // * Remove when used as jar library
     init {
-        generateTypescriptSDKFromSpringHandlers(requestMappingHandlerMapping)
+        generateTypescriptSDKFromSpringHandlers(
+            requestMappingHandlerMapping,
+            buildDirectory = "./ts-client/api-sdk"
+        )
     }
 }
 

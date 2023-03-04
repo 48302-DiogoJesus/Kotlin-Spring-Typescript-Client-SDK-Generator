@@ -1,10 +1,10 @@
 [x] complete system test with Timestamp to Date DIRECTLY
 
-[ ] Increase spring example's complexity
 [ ] Write README.md saying what this is
 [ ] Write usage instructions
 [ ] Build jar and try it
 
+[x] Increase spring example's complexity
 [x] Could optimize and keep mutating the handlers metadata as they pass though the steps
 [x] Look for some edge cases
 [x] Write basic tests

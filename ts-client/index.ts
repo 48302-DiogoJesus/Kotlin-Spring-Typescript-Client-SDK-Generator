@@ -1,4 +1,4 @@
-import BuildSDK from "./build-ts-sdk/sdk";
+import BuildSDK from "./api-sdk/sdk";
 
 const sdk = BuildSDK("http://localhost:8080");
 
@@ -11,7 +11,7 @@ sdk.Users.second({
     a: "This is a",
   },
   query: {
-    orderBy: true,
+    orderBy: false,
     search: "This is search",
   },
 })
