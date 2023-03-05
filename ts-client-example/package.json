@@ -1,0 +1,14 @@
+{
+  "name": "ts-client-example",
+  "version": "1.0.0",
+  "license": "MIT",
+  "scripts": {
+    "users": "ts-node users-example.ts",
+    "posts": "ts-node posts-example.ts"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "ts-node": "^10.4.0",
+    "typescript": "^4.9.5"
+}
+}

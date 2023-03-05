@@ -25,7 +25,9 @@ typealias HandlerResponseType<S, E> = ResponseEntity<HandlerResponse<S, E>>
 @GetMapping("/api/users/{id}")
 fun get(
     @PathVariable id: String
-): HandlerResponseType<User, MyErrorFormat> {
+): HandlerResponseType<User, MyErrorFormat>
+// You can use your own data type here. Ex: ResponseEntity<User>. See the example under `src/main/kotlin/c`
+{
     val uuid = UUID.fromString(id)
         ?: return HandlerResponse.error(400, GlobalErrors.INVALID_UUID /* this is of type MyErrorFormat (ERROR) */)
 
@@ -47,7 +49,7 @@ class TypescriptSDKGenerator(requestMappingHandlerMapping: RequestMappingInfoHan
             // Needed to extract handlers metadata using reflection
             requestMappingHandlerMapping,
             // Directory where the typescript files will be located 
-            buildDirectory = "./ts-client/api-sdk"
+            buildDirectory = "./ts-client-example/api-sdk"
         )
     }
 } 
@@ -90,3 +92,9 @@ if (getUserResponse.error) {
 
 const user: User = getUserResponse.data;
 ```
+
+### Current Limitations
+
+* **No** support for data classes with `generics` currently
+
+* **Can't** use recursive types (ex: `Throwable(cause: Throwable?)`)
