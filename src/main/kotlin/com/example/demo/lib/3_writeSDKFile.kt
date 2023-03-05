@@ -2,9 +2,9 @@ package com.example.demo.lib
 
 import com.example.demo.lib.types.HandlerMetadata
 import com.example.demo.lib.types.TypeName
-import com.example.demo.lib.utils.ConvertToTSFunctionHandler
-import com.example.demo.lib.utils.TypeInformation
-import com.example.demo.lib.utils.convertToTSFunction
+import com.example.demo.lib.utils.BuildTSFunctionHandlerMD
+import com.example.demo.lib.utils.ExtendedTypeInformation
+import com.example.demo.lib.utils.buildTSFunction
 import java.io.File
 
 fun writeSDKFile(
@@ -12,12 +12,12 @@ fun writeSDKFile(
     userTypes: Set<TypeName>,
     outFilePath: String
 ) {
-    val transformedHandlersMD: Map<String, List<ConvertToTSFunctionHandler>> =
+    val transformedHandlersMD: Map<String, List<BuildTSFunctionHandlerMD>> =
         handlersMD
             .groupBy { it.controllerName }
             .mapValues { (_, handlers) ->
                 handlers.map { handler ->
-                    ConvertToTSFunctionHandler(
+                    BuildTSFunctionHandlerMD(
                         path = handler.path,
                         functionName = handler.functionName,
                         method = handler.method,
@@ -26,16 +26,16 @@ fun writeSDKFile(
                         requestBodyType = if (handler.requestBodyType == null) {
                             null
                         } else {
-                            TypeInformation(
+                            ExtendedTypeInformation(
                                 type = handler.requestBodyType,
                                 isUserType = userTypes.contains(handler.requestBodyType.simpleName)
                             )
                         },
-                        successResponseType = TypeInformation(
+                        successResponseType = ExtendedTypeInformation(
                             type = handler.successResponseType,
                             isUserType = userTypes.contains(handler.successResponseType.simpleName)
                         ),
-                        errorResponseType = TypeInformation(
+                        errorResponseType = ExtendedTypeInformation(
                             type = handler.errorResponseType,
                             isUserType = userTypes.contains(handler.errorResponseType.simpleName)
                         )
@@ -59,7 +59,7 @@ fun writeSDKFile(
         sdkFileContents.appendLine("\t${controllerName.lowercase()}: {")
 
         for (handler in controllerHandlers)
-            sdkFileContents.appendLine("\t\t${handler.functionName}: ${convertToTSFunction(handler)},")
+            sdkFileContents.appendLine("\t\t${handler.functionName}: ${buildTSFunction(handler)},")
 
         sdkFileContents.appendLine("\t},")
     }

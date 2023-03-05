@@ -4,12 +4,12 @@ import org.springframework.web.bind.annotation.RequestMethod
 import kotlin.reflect.KClass
 import kotlin.reflect.KType
 
-data class TypeInformation(
+data class ExtendedTypeInformation(
     val type: KClass<*>,
     val isUserType: Boolean
 )
 
-data class ConvertToTSFunctionHandler(
+data class BuildTSFunctionHandlerMD(
     val path: String,
     val functionName: String,
     val method: RequestMethod,
@@ -17,10 +17,10 @@ data class ConvertToTSFunctionHandler(
     val paramsType: Map<String, KType>?,
     val queryStringType: Map<String, KType>?,
 
-    val requestBodyType: TypeInformation?,
+    val requestBodyType: ExtendedTypeInformation?,
 
-    val successResponseType: TypeInformation,
-    val errorResponseType: TypeInformation
+    val successResponseType: ExtendedTypeInformation,
+    val errorResponseType: ExtendedTypeInformation
 )
 
 /**
@@ -28,8 +28,8 @@ data class ConvertToTSFunctionHandler(
  * - is it a user type? request, response, error
  * - ts types already created in the previous step for NAMED types
  * */
-fun convertToTSFunction(
-    handlerMD: ConvertToTSFunctionHandler
+fun buildTSFunction(
+    handlerMD: BuildTSFunctionHandlerMD
 ): String {
     val tsTypeGenerator = TSTypesGenerator()
     val stringBuilder = StringBuilder()
@@ -88,9 +88,9 @@ fun convertToTSFunction(
     stringBuilder.appendLine("\tfetch(")
     stringBuilder.appendLine(
         "\t\treplacePathAndQueryVariables(`\${apiBaseUrl}${handlerMD.path}`, " +
-            "${if (handlerMD.paramsType != null) "args" else "undefined"}, " +
-            (if (handlerMD.queryStringType != null) "args" else "undefined") +
-            "),"
+                "${if (handlerMD.paramsType != null) "args" else "undefined"}, " +
+                (if (handlerMD.queryStringType != null) "args" else "undefined") +
+                "),"
     )
 
     stringBuilder.appendLine("\t\t{")
