@@ -5,19 +5,11 @@ export interface ErrorFormat {
 	internalCode: number ,
 	title: string 
 }
-export interface Instant {
-	seconds: number ,
-	nanos: number 
-}
-export interface UUID {
-	mostSigBits: number ,
-	leastSigBits: number 
-}
-export interface User {
-	createdAt: Instant ,
-	id: UUID ,
+export interface CreateUserModel {
 	name: string 
 }
-export interface CreateUserModel {
+export interface User {
+	createdAt: Date ,
+	id: string ,
 	name: string 
 }

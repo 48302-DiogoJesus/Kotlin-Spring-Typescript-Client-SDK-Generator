@@ -1,9 +1,11 @@
-[x] complete system test with Timestamp to Date DIRECTLY
+[ ] Run a TS formatter through the output files
 
 [ ] Write README.md saying what this is
 [ ] Write usage instructions
 [ ] Build jar and try it
+[ ] Wrapper around fetch api to have success and error callbacks
 
+[x] complete system test with Timestamp to Date DIRECTLY
 [x] Increase spring example's complexity
 [x] Could optimize and keep mutating the handlers metadata as they pass though the steps
 [x] Look for some edge cases

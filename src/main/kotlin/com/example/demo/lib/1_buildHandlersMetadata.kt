@@ -33,14 +33,14 @@ fun buildHandlersMetadata(
         handler.method.parameters
             .mapNotNull { it.getAnnotation(PathVariable::class.java)?.let { annotation -> it to annotation } }
             .forEach { (param, annotation) ->
-                paramsTypes[param.name] = param.type.kotlin.createType(nullable = !annotation.required)
+                paramsTypes[annotation.name] = param.type.kotlin.createType(nullable = !annotation.required)
             }
 
         val queryTypes = mutableMapOf<String, KType>()
         handler.method.parameters
             .mapNotNull { it.getAnnotation(RequestParam::class.java)?.let { annotation -> it to annotation } }
             .forEach { (param, annotation) ->
-                queryTypes[param.name] = param.type.kotlin.createType(nullable = !annotation.required);
+                queryTypes[annotation.name] = param.type.kotlin.createType(nullable = !annotation.required);
             }
 
         val completeResponseType: String = handler.method.returnType.typeName

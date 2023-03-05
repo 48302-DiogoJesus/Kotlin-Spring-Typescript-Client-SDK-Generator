@@ -4,6 +4,7 @@ import com.example.demo.lib.types.TypeName
 import java.sql.Date
 import java.sql.Timestamp
 import java.time.Instant
+import java.util.UUID
 import kotlin.reflect.KClass
 import kotlin.reflect.KType
 import kotlin.reflect.full.createType
@@ -86,7 +87,9 @@ class TSTypesGenerator() {
             String::class -> "string"
             // ! Conversion not tested
             Timestamp::class -> "Date"
+            Instant::class -> "Date"
             Date::class -> "Date"
+            UUID::class -> "string"
             Char::class -> "string"
             Int::class -> "number"
             Long::class -> "number"
@@ -128,7 +131,9 @@ fun isUserType(type: KClass<*>): Boolean {
         String::class -> false
         // ! Conversion not tested
         Timestamp::class -> false
+        Instant::class -> false
         Date::class -> false
+        UUID::class -> false
         Char::class -> false
         Int::class -> false
         Long::class -> false

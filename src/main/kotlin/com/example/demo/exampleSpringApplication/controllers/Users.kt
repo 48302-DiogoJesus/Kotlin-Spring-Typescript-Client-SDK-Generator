@@ -1,6 +1,7 @@
 package com.example.demo.exampleSpringApplication.controllers
 
 import com.example.demo.exampleSpringApplication.*
+import com.example.demo.exampleSpringApplication.controllers.errors.GlobalErrors
 import com.example.demo.exampleSpringApplication.controllers.errors.UserErrors
 import com.example.demo.exampleSpringApplication.utils.Uris
 import com.example.demo.lib.types.HandlerResponse
@@ -25,9 +26,14 @@ class USERS {
 
     @GetMapping(Uris.Users.GET)
     fun get(
-        @PathVariable id: UUID,
+        // (name = "id") is not needed if the variable name is "id" instead of "userId"
+        // Here it's just used to show it's possible
+        @PathVariable(name = "id") userId: String,
     ): HandlerResponseType<User> {
-        val user: User = USERS_DB[id]
+        val uuid = UUID.fromString(userId)
+            ?: return HandlerResponse.error(400, GlobalErrors.INVALID_UUID)
+
+        val user: User = USERS_DB[uuid]
             ?: return HandlerResponse.error(404, UserErrors.USER_NOT_FOUND_ERROR)
 
         return HandlerResponse.success(user)
@@ -55,15 +61,18 @@ class USERS {
         return HandlerResponse.success(newUser)
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping(Uris.Users.DELETE)
     fun delete(
-        @PathVariable(name = "id") userId: UUID,
+        @PathVariable(name = "id") userId: String,
     ): HandlerResponseType<Unit> {
-        val userToDelete: User = USERS_DB[userId]
+        val uuid = UUID.fromString(userId)
+            ?: return HandlerResponse.error(400, GlobalErrors.INVALID_UUID)
+
+        val userToDelete: User = USERS_DB[uuid]
             ?: return HandlerResponse.error(404, UserErrors.USER_NOT_FOUND_ERROR)
 
         // Remove from DB
-        USERS_DB.remove(userId)
+        USERS_DB.remove(uuid)
 
         return HandlerResponse.success(Unit)
     }

@@ -37,20 +37,28 @@ fun convertToTSFunction(
     // function arguments
     stringBuilder.appendLine("(args: { ")
 
-    if (handlerMD.paramsType != null)
-        stringBuilder.appendLine("\tparams: ${tsTypeGenerator.fromMap(handlerMD.paramsType).result},")
+    if (handlerMD.paramsType != null) {
+        stringBuilder.appendLine(
+            "\t${tsTypeGenerator.fromMap(handlerMD.paramsType).result.drop(1).dropLast(1)},"
+        )
+    }
 
     if (handlerMD.queryStringType != null)
-        stringBuilder.appendLine("\tquery: ${tsTypeGenerator.fromMap(handlerMD.queryStringType).result},")
+        stringBuilder.appendLine(
+            "\t${tsTypeGenerator.fromMap(handlerMD.queryStringType).result.drop(1).dropLast(1)},"
+        )
 
     if (handlerMD.requestBodyType != null) {
         val toAppend = if (handlerMD.requestBodyType.isUserType)
-            "body: UserTypes.${handlerMD.requestBodyType.type.simpleName},"
+            "} & UserTypes.${handlerMD.requestBodyType.type.simpleName}"
         else
-            "body: ${tsTypeGenerator.fromKClass(handlerMD.requestBodyType.type).result},"
+            "\t\t${tsTypeGenerator.fromKClass(handlerMD.requestBodyType.type).result.drop(1).dropLast(1)} }"
 
         stringBuilder.appendLine("\t${toAppend}")
+    } else {
+        stringBuilder.append("}")
     }
+    stringBuilder.append("):")
 
     // return type
     val successResponseType = if (handlerMD.successResponseType.type == Unit::class)
@@ -70,14 +78,14 @@ fun convertToTSFunction(
         else
             tsTypeGenerator.fromKClass(handlerMD.errorResponseType.type).result
     }
-    stringBuilder.appendLine(" }): Promise<ServerResponse<$successResponseType, $errorResponseType>> => ")
+    stringBuilder.appendLine("  Promise<ServerResponse<$successResponseType, $errorResponseType>> => ")
 
     // Builds function body
     stringBuilder.appendLine("\tfetch(")
     stringBuilder.appendLine(
         "\t\treplacePathAndQueryVariables(`\${apiBaseUrl}${handlerMD.path}`, " +
-                "${if (handlerMD.paramsType != null) "args.params" else "undefined"}, " +
-                (if (handlerMD.queryStringType != null) "args.query" else "undefined")
+                "${if (handlerMD.paramsType != null) "args" else "undefined"}, " +
+                (if (handlerMD.queryStringType != null) "args" else "undefined")
                 + "),"
     )
 
@@ -88,7 +96,8 @@ fun convertToTSFunction(
     if (handlerMD.requestBodyType != null) {
         // Builds request body if it exists
         stringBuilder.appendLine("\t\t\theaders: {\"Content-Type\": \"application/json\"},")
-        stringBuilder.appendLine("\t\t\tbody: JSON.stringify(args.body)")
+        // BY send {args} we are sending more bytes on the wire
+        stringBuilder.appendLine("\t\t\tbody: JSON.stringify(args)")
     }
 
     stringBuilder.appendLine("\t\t}")

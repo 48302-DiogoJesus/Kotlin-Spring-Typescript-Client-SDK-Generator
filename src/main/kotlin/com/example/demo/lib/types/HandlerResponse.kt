@@ -20,6 +20,6 @@ class HandlerResponse<S, E> private constructor(
         fun <S, E> error(statusCode: Int, error: E) =
             ResponseEntity
                 .status(statusCode)
-                .body(HandlerResponse<S, E>(true, null, error))
+                .body(HandlerResponse<S, E>(false, null, error))
     }
 }

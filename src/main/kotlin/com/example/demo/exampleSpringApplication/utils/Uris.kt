@@ -7,7 +7,7 @@ object Uris {
         const val BASE = "${Uris.BASE}/users"
 
         const val CREATE = "$BASE/"
-        const val GET = "$BASE/{uid}"
-        const val DELETE = "$BASE/{uid}"
+        const val GET = "$BASE/{id}"
+        const val DELETE = "$BASE/{id}"
     }
 }
