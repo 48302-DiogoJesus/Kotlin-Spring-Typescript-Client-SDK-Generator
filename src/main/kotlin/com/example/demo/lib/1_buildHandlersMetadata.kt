@@ -1,16 +1,11 @@
 package com.example.demo.lib
 
 import com.example.demo.lib.types.HandlerMetadata
-import org.jetbrains.annotations.NotNull
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.servlet.mvc.method.RequestMappingInfoHandlerMapping
-import java.lang.reflect.Parameter
 import java.lang.reflect.ParameterizedType
-import java.lang.reflect.Type
-import java.lang.reflect.WildcardType
-import kotlin.reflect.KClass
 import kotlin.reflect.KType
 import kotlin.reflect.full.createType
 
@@ -40,7 +35,7 @@ fun buildHandlersMetadata(
         handler.method.parameters
             .mapNotNull { it.getAnnotation(RequestParam::class.java)?.let { annotation -> it to annotation } }
             .forEach { (param, annotation) ->
-                queryTypes[annotation.name] = param.type.kotlin.createType(nullable = !annotation.required);
+                queryTypes[annotation.name] = param.type.kotlin.createType(nullable = !annotation.required)
             }
 
         val completeResponseType: String = handler.method.returnType.typeName

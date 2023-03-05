@@ -1,10 +1,9 @@
-[ ] Run a TS formatter through the output files
+[ ] Add 1 more controller: Posts
 
-[ ] Write README.md saying what this is
-[ ] Write usage instructions
 [ ] Build jar and try it
-[ ] Wrapper around fetch api to have success and error callbacks
-
+[ ] Run a TS formatter through the output files
+[x] Look for "// !" comments
+[x] Write basic README.md
 [x] complete system test with Timestamp to Date DIRECTLY
 [x] Increase spring example's complexity
 [x] Could optimize and keep mutating the handlers metadata as they pass though the steps

@@ -17,7 +17,6 @@ data class User(
     val createdAt: Instant = Instant.now()
 )
 
-
 val USERS_DB: MutableMap<UUID, User> = mutableMapOf()
 
 @RestController
@@ -28,7 +27,7 @@ class USERS {
     fun get(
         // (name = "id") is not needed if the variable name is "id" instead of "userId"
         // Here it's just used to show it's possible
-        @PathVariable(name = "id") userId: String,
+        @PathVariable(name = "id") userId: String
     ): HandlerResponseType<User> {
         val uuid = UUID.fromString(userId)
             ?: return HandlerResponse.error(400, GlobalErrors.INVALID_UUID)
@@ -43,10 +42,11 @@ class USERS {
 
     @PostMapping(Uris.Users.CREATE)
     fun create(
-        @RequestBody user: CreateUserModel,
+        @RequestBody user: CreateUserModel
     ): HandlerResponseType<User> {
-        if (user.name.length < 4)
+        if (user.name.length < 4) {
             return HandlerResponse.error(400, UserErrors.USER_NAME_LENGTH_ERROR)
+        }
 
         val newUserId = UUID.randomUUID()
         val newUser: User = User(
@@ -63,7 +63,7 @@ class USERS {
 
     @DeleteMapping(Uris.Users.DELETE)
     fun delete(
-        @PathVariable(name = "id") userId: String,
+        @PathVariable(name = "id") userId: String
     ): HandlerResponseType<Unit> {
         val uuid = UUID.fromString(userId)
             ?: return HandlerResponse.error(400, GlobalErrors.INVALID_UUID)

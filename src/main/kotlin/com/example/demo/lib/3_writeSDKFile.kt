@@ -23,13 +23,14 @@ fun writeSDKFile(
                         method = handler.method,
                         paramsType = handler.paramsType.ifEmpty { null },
                         queryStringType = handler.queryStringType.ifEmpty { null },
-                        requestBodyType = if (handler.requestBodyType == null)
+                        requestBodyType = if (handler.requestBodyType == null) {
                             null
-                        else
+                        } else {
                             TypeInformation(
                                 type = handler.requestBodyType,
                                 isUserType = userTypes.contains(handler.requestBodyType.simpleName)
-                            ),
+                            )
+                        },
                         successResponseType = TypeInformation(
                             type = handler.successResponseType,
                             isUserType = userTypes.contains(handler.successResponseType.simpleName)
@@ -37,7 +38,7 @@ fun writeSDKFile(
                         errorResponseType = TypeInformation(
                             type = handler.errorResponseType,
                             isUserType = userTypes.contains(handler.errorResponseType.simpleName)
-                        ),
+                        )
                     )
                 }
             }
@@ -55,7 +56,7 @@ fun writeSDKFile(
     sdkFileContents.appendLine("export default function BuildSDK(apiBaseUrl: string) { return {")
 
     for ((controllerName, controllerHandlers) in transformedHandlersMD) {
-        sdkFileContents.appendLine("\t${controllerName}: {")
+        sdkFileContents.appendLine("\t${controllerName.lowercase()}: {")
 
         for (handler in controllerHandlers)
             sdkFileContents.appendLine("\t\t${handler.functionName}: ${convertToTSFunction(handler)},")

@@ -34,15 +34,15 @@ fun writeDependencies(
 
     File(serverResponseTypeFilePath).writeText(
         "type SuccessResponse<S> = {\n" +
-                "  isSuccess: true;\n" +
+                "  error: null;\n" +
                 "  data: S;\n" +
                 "};\n" +
                 "\n" +
                 "type ErrorResponse<E> = {\n" +
-                "  isSuccess: false;\n" +
+                "  data: null;\n" +
                 "  error: E;\n" +
                 "};\n" +
                 "\n" +
-                "export type ServerResponse<S, E> = SuccessResponse<S> | ErrorResponse<E>;\n"
+                "export type ServerResponse<S, E> = SuccessResponse<S> | ErrorResponse<E>;"
     )
 }

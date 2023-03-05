@@ -37,19 +37,21 @@ class TSTypesGenerator() {
         typesCreated.clear()
 
         return ConversionResult(
-            if (typeName == null)
+            if (typeName == null) {
                 "{$properties}"
-            else
-                "export interface $typeName {$properties}",
+            } else {
+                "export interface $typeName {$properties}"
+            },
             typesCopy
         )
     }
 
     fun fromKClass(klass: KClass<*>, typeName: String? = null): ConversionResult {
-        val result = if (!isUserType(klass))
+        val result = if (!isUserType(klass)) {
             convertKTypeToTSType(klass.createType())
-        else
+        } else {
             convertKClassInternal(klass, typeName)
+        }
 
         val typesCopy = typesCreated.toMap()
         typesCreated.clear()
@@ -58,15 +60,16 @@ class TSTypesGenerator() {
 
     private fun convertKClassInternal(
         kotlinClass: KClass<*>,
-        finalInterfaceName: String? = null,
+        finalInterfaceName: String? = null
     ): String {
         val className = kotlinClass.simpleName
             ?: finalInterfaceName
             ?: throw Error("Class with no name tried to be converted")
 
         val cachedType = typesCreated[className]
-        if (cachedType != null)
+        if (cachedType != null) {
             return cachedType
+        }
 
         val properties = kotlinClass.memberProperties.joinToString(",\n") {
             val propertyType = it.returnType
@@ -85,7 +88,6 @@ class TSTypesGenerator() {
     private fun convertKTypeToTSType(type: KType): String {
         return when (type.classifier) {
             String::class -> "string"
-            // ! Conversion not tested
             Timestamp::class -> "Date"
             Instant::class -> "Date"
             Date::class -> "Date"
@@ -99,10 +101,11 @@ class TSTypesGenerator() {
             Boolean::class -> "boolean"
             List::class -> {
                 val nestedType = type.arguments.firstOrNull()?.type ?: return "any[]"
-                if (nestedType.isMarkedNullable)
+                if (nestedType.isMarkedNullable) {
                     "(${convertKTypeToTSType(nestedType)} | null)[]"
-                else
+                } else {
                     "${convertKTypeToTSType(nestedType)}[]"
+                }
             }
 
             Map::class -> {
@@ -129,7 +132,6 @@ class TSTypesGenerator() {
 fun isUserType(type: KClass<*>): Boolean {
     return when (type) {
         String::class -> false
-        // ! Conversion not tested
         Timestamp::class -> false
         Instant::class -> false
         Date::class -> false

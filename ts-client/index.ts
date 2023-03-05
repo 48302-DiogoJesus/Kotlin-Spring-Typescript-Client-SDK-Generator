@@ -1,5 +1,5 @@
 import BuildSDK from "./api-sdk/sdk";
-import { ErrorFormat } from "./api-sdk/UserTypes";
+import { ErrorFormat, User } from "./api-sdk/UserTypes";
 
 const sdk = BuildSDK("http://localhost:8080");
 
@@ -10,20 +10,20 @@ function displayError(error: ErrorFormat) {
 (async () => {
   try {
     // CREATE
-    const createUserRes = await sdk.USERS.create({ name: "Robert" });
+    const createUserRes = await sdk.users.create({ name: "Robert" });
 
-    if (!createUserRes.isSuccess) {
+    if (createUserRes.error) {
       displayError(createUserRes.error);
       return;
     }
 
-    const userAfterCreated = createUserRes.data;
-    console.log("User Created:", userAfterCreated);
+    const userId: string = createUserRes.data.id;
+    console.log("User Created:", userId);
 
     // GET
-    const getUserRes = await sdk.USERS.get({ id: userAfterCreated.id });
+    const getUserRes = await sdk.users.get({ id: userId });
 
-    if (!getUserRes.isSuccess) {
+    if (getUserRes.error) {
       displayError(getUserRes.error);
       return;
     }
@@ -32,9 +32,9 @@ function displayError(error: ErrorFormat) {
     console.log("User Get:", userAfterGet);
 
     // DELETE
-    const deleteUserRes = await sdk.USERS.delete({ id: userAfterGet.id });
+    const deleteUserRes = await sdk.users.delete({ id: userId });
 
-    if (!deleteUserRes.isSuccess) {
+    if (deleteUserRes.error) {
       displayError(deleteUserRes.error);
       return;
     }
@@ -42,11 +42,9 @@ function displayError(error: ErrorFormat) {
     console.log("Delete success");
 
     // GET after delete
-    const getUserAfterDeletedRes = await sdk.USERS.get({
-      id: userAfterGet.id,
-    });
+    const getUserAfterDeletedRes = await sdk.users.get({ id: userId });
 
-    if (!getUserAfterDeletedRes.isSuccess) {
+    if (getUserAfterDeletedRes.error) {
       displayError(getUserAfterDeletedRes.error);
       return;
     }

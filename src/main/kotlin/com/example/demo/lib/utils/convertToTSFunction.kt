@@ -29,7 +29,7 @@ data class ConvertToTSFunctionHandler(
  * - ts types already created in the previous step for NAMED types
  * */
 fun convertToTSFunction(
-    handlerMD: ConvertToTSFunctionHandler,
+    handlerMD: ConvertToTSFunctionHandler
 ): String {
     val tsTypeGenerator = TSTypesGenerator()
     val stringBuilder = StringBuilder()
@@ -43,40 +43,44 @@ fun convertToTSFunction(
         )
     }
 
-    if (handlerMD.queryStringType != null)
+    if (handlerMD.queryStringType != null) {
         stringBuilder.appendLine(
             "\t${tsTypeGenerator.fromMap(handlerMD.queryStringType).result.drop(1).dropLast(1)},"
         )
+    }
 
     if (handlerMD.requestBodyType != null) {
-        val toAppend = if (handlerMD.requestBodyType.isUserType)
+        val toAppend = if (handlerMD.requestBodyType.isUserType) {
             "} & UserTypes.${handlerMD.requestBodyType.type.simpleName}"
-        else
+        } else {
             "\t\t${tsTypeGenerator.fromKClass(handlerMD.requestBodyType.type).result.drop(1).dropLast(1)} }"
+        }
 
-        stringBuilder.appendLine("\t${toAppend}")
+        stringBuilder.appendLine("\t$toAppend")
     } else {
         stringBuilder.append("}")
     }
     stringBuilder.append("):")
 
     // return type
-    val successResponseType = if (handlerMD.successResponseType.type == Unit::class)
+    val successResponseType = if (handlerMD.successResponseType.type == Unit::class) {
         "void"
-    else {
-        if (handlerMD.successResponseType.isUserType)
+    } else {
+        if (handlerMD.successResponseType.isUserType) {
             "UserTypes.${handlerMD.successResponseType.type.simpleName}"
-        else
+        } else {
             tsTypeGenerator.fromKClass(handlerMD.successResponseType.type).result
+        }
     }
 
-    val errorResponseType = if (handlerMD.errorResponseType.type == Unit::class)
+    val errorResponseType = if (handlerMD.errorResponseType.type == Unit::class) {
         "void"
-    else {
-        if (handlerMD.errorResponseType.isUserType)
+    } else {
+        if (handlerMD.errorResponseType.isUserType) {
             "UserTypes.${handlerMD.errorResponseType.type.simpleName}"
-        else
+        } else {
             tsTypeGenerator.fromKClass(handlerMD.errorResponseType.type).result
+        }
     }
     stringBuilder.appendLine("  Promise<ServerResponse<$successResponseType, $errorResponseType>> => ")
 
@@ -84,9 +88,9 @@ fun convertToTSFunction(
     stringBuilder.appendLine("\tfetch(")
     stringBuilder.appendLine(
         "\t\treplacePathAndQueryVariables(`\${apiBaseUrl}${handlerMD.path}`, " +
-                "${if (handlerMD.paramsType != null) "args" else "undefined"}, " +
-                (if (handlerMD.queryStringType != null) "args" else "undefined")
-                + "),"
+            "${if (handlerMD.paramsType != null) "args" else "undefined"}, " +
+            (if (handlerMD.queryStringType != null) "args" else "undefined") +
+            "),"
     )
 
     stringBuilder.appendLine("\t\t{")

@@ -7,19 +7,18 @@ import org.springframework.http.ResponseEntity
 typealias HandlerResponseType<S> = ResponseEntity<HandlerResponse<S, ErrorFormat>>
 
 class HandlerResponse<S, E> private constructor(
-    val isSuccess: Boolean,
     val data: S?,
-    val error: E?,
+    val error: E?
 ) {
     companion object {
         fun <S, E> success(data: S, statusCode: Int = 200) =
             ResponseEntity
                 .status(statusCode)
-                .body(HandlerResponse<S, E>(true, data, null))
+                .body(HandlerResponse<S, E>(data, null))
 
         fun <S, E> error(statusCode: Int, error: E) =
             ResponseEntity
                 .status(statusCode)
-                .body(HandlerResponse<S, E>(false, null, error))
+                .body(HandlerResponse<S, E>(null, error))
     }
 }

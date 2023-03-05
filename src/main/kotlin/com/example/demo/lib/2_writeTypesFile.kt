@@ -8,8 +8,9 @@ import java.io.File
 fun writeTypesFile(handlersMetadata: List<HandlerMetadata>, typesFilePath: String): Set<TypeName> {
     val writtenTypes: MutableMap<TypeName, String> = mutableMapOf()
     val addUnique = { (typeName, typeDefinition): Map.Entry<TypeName, String> ->
-        if (!writtenTypes.containsKey(typeName))
+        if (!writtenTypes.containsKey(typeName)) {
             writtenTypes[typeName] = typeDefinition
+        }
     }
 
     val tsTypeGenerator = TSTypesGenerator()
@@ -17,7 +18,6 @@ fun writeTypesFile(handlersMetadata: List<HandlerMetadata>, typesFilePath: Strin
         if (handler.requestBodyType != null) {
             // Request body is needed for this handler
             val res = tsTypeGenerator.fromKClass(handler.requestBodyType, handler.requestBodyType.simpleName)
-            // ! write res to types file
             res.typesCreated.forEach { addUnique(it) }
         }
 

@@ -1,10 +1,10 @@
 type SuccessResponse<S> = {
-  isSuccess: true;
+  error: null;
   data: S;
 };
 
 type ErrorResponse<E> = {
-  isSuccess: false;
+  data: null;
   error: E;
 };
 

@@ -9,8 +9,8 @@ val queryType = mapOf(
 )
 
 const val QUERY_TYPE = "{\tsearch: string,\n" +
-        "\torderAsc: boolean,\n" +
-        "\tlimit: number}"
+    "\torderAsc: boolean,\n" +
+    "\tlimit: number}"
 
 val queryTypeWithNullables = mapOf(
     "search" to String::class.createType(),
@@ -19,5 +19,5 @@ val queryTypeWithNullables = mapOf(
 )
 
 const val QUERY_TYPE_W_NULLABLES_CONVERTED = "{\tsearch: string,\n" +
-        "\torderAsc?: boolean,\n" +
-        "\tlimit?: number}"
+    "\torderAsc?: boolean,\n" +
+    "\tlimit?: number}"
