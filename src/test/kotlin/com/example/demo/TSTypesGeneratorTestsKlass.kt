@@ -20,10 +20,11 @@ class TSTypesGeneratorTestsKlass {
         val tsTypeGenerator = TSTypesGenerator()
         val (result, typesCreated) = tsTypeGenerator.fromKClass(Person::class)
 
+
         assertEquals(2, typesCreated.size)
         assertEquals(PERSON_CONVERTED, result)
 
-        val secondaryType = typesCreated[0]
+        val secondaryType = typesCreated.values.toList()[0]
         assertEquals(PERSON_WITHOUT_FRIENDS_CONVERTED, secondaryType)
     }
 
@@ -34,8 +35,10 @@ class TSTypesGeneratorTestsKlass {
 
         assertEquals(3, typesCreated.size)
 
+        val typesCreatedValues = typesCreated.values.toList()
+
         assertEquals(SCHOOL_CONVERTED, result)
-        assertEquals(typesCreated[0], PERSON_WITHOUT_FRIENDS_CONVERTED)
-        assertEquals(typesCreated[1], PERSON_CONVERTED)
+        assertEquals(typesCreatedValues[0], PERSON_WITHOUT_FRIENDS_CONVERTED)
+        assertEquals(typesCreatedValues[1], PERSON_CONVERTED)
     }
 }
