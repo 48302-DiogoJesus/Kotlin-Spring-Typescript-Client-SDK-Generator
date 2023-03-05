@@ -4,13 +4,13 @@ import { replacePathAndQueryVariables } from "./Utils";
 
 export default function BuildSDK(apiBaseUrl: string) { return {
 	users: {
-		get: (args: { 
+		delete: (args: { 
 		id: string,
-}):  Promise<ServerResponse<UserTypes.User, UserTypes.ErrorFormat>> => 
+}):  Promise<ServerResponse<void, UserTypes.ErrorFormat>> => 
 	fetch(
 		replacePathAndQueryVariables(`${apiBaseUrl}/api/users/api/users/{id}`, args, undefined),
 		{
-			method: "GET",
+			method: "DELETE",
 		}
 	)
 		.then(res => res.json())
@@ -28,13 +28,13 @@ export default function BuildSDK(apiBaseUrl: string) { return {
 	)
 		.then(res => res.json())
 ,
-		delete: (args: { 
+		get: (args: { 
 		id: string,
-}):  Promise<ServerResponse<void, UserTypes.ErrorFormat>> => 
+}):  Promise<ServerResponse<UserTypes.User, UserTypes.ErrorFormat>> => 
 	fetch(
 		replacePathAndQueryVariables(`${apiBaseUrl}/api/users/api/users/{id}`, args, undefined),
 		{
-			method: "DELETE",
+			method: "GET",
 		}
 	)
 		.then(res => res.json())
