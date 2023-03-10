@@ -1,6 +1,8 @@
 package kttsRPC.rpclib
 
+import io.swagger.models.Response
 import kttsRPC.types.HandlerMetadata
+import kttsRPC.types.ResponseStatus
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestParam
@@ -69,6 +71,7 @@ fun buildHandlersMetadata(
         return@mapNotNull HandlerMetadata(
             controllerName,
             functionName,
+            handler.getMethodAnnotation(ResponseStatus::class.java),
             method,
             path,
             paramsTypes,

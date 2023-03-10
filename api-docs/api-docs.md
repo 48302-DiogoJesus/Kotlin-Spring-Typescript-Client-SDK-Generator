@@ -1,3 +1,9 @@
+# Spring API Documentation
+
+###### (Auto-generated)
+
+---
+
 ## Global Error Format
 
 ```json
@@ -9,53 +15,11 @@ ErrorFormat {
 ```
 ---
 
-### Users
+## Posts
 
-#### GET /api/users/{id: string}/{a: string}/{b: string}
+- ### GET /api/posts/{id: string}
 
-`Response Body`
-
-```json
-User {
-	createdAt: Date ,
-	id: string ,
-	name: string 
-}
-```
-#### DELETE /api/users/{id: string}
-
-`Response Body`
-
-```json
-void
-```
-#### POST /api/users/
-
-`Request Body`
-
-```json
-CreateUserModel {
-	name: string 
-}
-```
-`Response Body`
-
-```json
-User {
-	createdAt: Date ,
-	id: string ,
-	name: string 
-}
-```
-
-
----
-
-### Posts
-
-#### GET /api/posts/{id: string}
-
-`Response Body`
+#### Response Body
 
 ```json
 Post {
@@ -66,9 +30,13 @@ Post {
 	title: string 
 }
 ```
-#### POST /api/posts/
+#### Success Responses
 
-`Request Body`
+`200` OK
+
+- ### POST /api/posts/
+
+#### Request Body
 
 ```json
 CreatePostModel {
@@ -77,7 +45,7 @@ CreatePostModel {
 	title: string 
 }
 ```
-`Response Body`
+#### Response Body
 
 ```json
 Post {
@@ -88,5 +56,87 @@ Post {
 	title: string 
 }
 ```
+#### Success Responses
+
+`201` CREATED
+
+#### Error Responses
+
+`422` UNPROCESSABLE_ENTITY
+
+`404` NOT_FOUND
+
+
+
+---
+
+## Users
+
+- ### DELETE /api/users/{id: string}
+
+#### Response Body
+
+```json
+void
+```
+#### Success Responses
+
+`204` NO_CONTENT
+
+#### Error Responses
+
+`422` UNPROCESSABLE_ENTITY
+
+`404` NOT_FOUND
+
+- ### GET /api/users/{id: string}
+
+#### Response Body
+
+```json
+User {
+	createdAt: Date ,
+	id: string ,
+	name: string 
+}
+```
+#### Success Responses
+
+`200` OK
+
+#### Error Responses
+
+`404` NOT_FOUND
+
+`422` UNPROCESSABLE_ENTITY
+
+- ### POST /api/users/
+
+#### Request Body
+
+```json
+CreateUserModel {
+	name: string 
+}
+```
+#### Response Body
+
+```json
+User {
+	createdAt: Date ,
+	id: string ,
+	name: string 
+}
+```
+#### Success Responses
+
+`201` CREATED
+
+#### Error Responses
+
+`404` NOT_FOUND
+
+`422` UNPROCESSABLE_ENTITY
+
 
 

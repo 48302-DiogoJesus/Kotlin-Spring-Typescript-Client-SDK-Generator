@@ -1,12 +1,10 @@
 # TODO
 
-### Docs
+- [ ] Separate libs into 2 projects
+
+### DOCS
 
 - [ ] Authenticated Endpoints (Detected like in DAW)
-
-- [ ] Improve readability of query params like path variables
-
-- [ ] Response should also have status code (use annotations). Code the builder
 
 ### RPC
 

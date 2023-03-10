@@ -7,20 +7,6 @@ User {
 ```
 
 ```json
-ErrorFormat {
-	detail: string ,
-	internalCode: number ,
-	title: string 
-}
-```
-
-```json
-CreateUserModel {
-	name: string 
-}
-```
-
-```json
 Post {
 	author: User ,
 	content?: string | null,
@@ -31,9 +17,23 @@ Post {
 ```
 
 ```json
+ErrorFormat {
+	detail: string ,
+	internalCode: number ,
+	title: string 
+}
+```
+
+```json
 CreatePostModel {
 	authorId: string ,
 	content?: string | null,
 	title: string 
+}
+```
+
+```json
+CreateUserModel {
+	name: string 
 }
 ```

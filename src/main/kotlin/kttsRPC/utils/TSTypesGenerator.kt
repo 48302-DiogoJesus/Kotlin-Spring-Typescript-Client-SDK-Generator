@@ -31,7 +31,7 @@ class TSTypesGenerator() {
         typeName: String? = null
     ): ConversionResult {
         val properties = map.entries.joinToString(",\n") { (propName, type) ->
-            "\t${propName}${if (type.isMarkedNullable) "?" else ""}: ${convertKTypeToTSType(type)}"
+            "\t${propName}${if (type.isMarkedNullable) "?" else ""}: ${convertKTypeToTSType(type)} ${if (type.isMarkedNullable) " | null" else ""}"
         }
         val typesCopy = typesCreated.toMap()
         typesCreated.clear()

@@ -7,6 +7,7 @@ import kotlin.reflect.KType
 data class HandlerMetadata(
     val controllerName: String,
     val functionName: String,
+    val handlerResponseStatus: ResponseStatus?,
 
     val method: RequestMethod,
     val path: String,

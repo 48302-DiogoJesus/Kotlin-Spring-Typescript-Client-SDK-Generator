@@ -1,6 +1,7 @@
 package kttsRPC.docslib
 
 import kttsRPC.rpclib.buildHandlersMetadata
+import kttsRPC.types.ResponseStatus
 import kttsRPC.types.TypeName
 import kttsRPC.utils.TSTypesGenerator
 import org.springframework.web.bind.annotation.RequestMethod
@@ -11,6 +12,8 @@ data class HandlerMetadataWithTypes(
     val controllerName: String,
     val functionName: String,
     val method: RequestMethod,
+    val responseStatus: ResponseStatus?,
+
     val path: String,
     val pathVars: String?,
     val queryStringType: String?,
@@ -23,10 +26,10 @@ fun generateDocs(
     requestMappingHandlerMapping: RequestMappingInfoHandlerMapping,
     buildDirectory: String
 ) {
+    val typesGen = TSTypesGenerator()
+
     val handlersMetadata =
         buildHandlersMetadata(requestMappingHandlerMapping)
-
-    val typesGen = TSTypesGenerator()
 
     handlersMetadata.map {
         val requestBodyType = if (it.requestBodyType != null)
@@ -51,7 +54,7 @@ fun generateDocs(
 
         return@map Pair(
             HandlerMetadataWithTypes(
-                it.controllerName, it.functionName, it.method, it.path,
+                it.controllerName, it.functionName, it.method, it.handlerResponseStatus, it.path,
                 paramsType?.result?.removePrefix("export interface "),
                 queryStringType?.result?.removePrefix("export interface "),
                 requestBodyType?.result?.removePrefix("export interface "),
@@ -81,31 +84,30 @@ fun generateDocs(
         }
         .groupBy { it.controllerName }
         .also {
-            val outputMD = StringBuilder()
+            val md = StringBuilder()
+            md.appendLine("# Spring API Documentation\n")
+            md.appendLine("###### (Auto-generated)\n")
+            md.appendLine("---\n")
 
             val errorResponseType = it.values.flatten().find { h -> h.errorResponseType != null }?.errorResponseType
                 ?: throw Error("No Error Type Found")
 
-            outputMD.appendLine("## Global Error Format\n")
-            outputMD.appendLine("```json\n${errorResponseType}\n```")
+            md.appendLine("## Global Error Format\n")
+            md.appendLine("```json\n${errorResponseType}\n```")
 
             // Build Markdown docs
             for ((controllerName, controllerHandlers) in it) {
-                outputMD.appendLine("---\n")
-                outputMD.appendLine("### $controllerName\n")
+                md.appendLine("---\n")
+                md.appendLine("## $controllerName\n")
 
                 for (handler in controllerHandlers) {
                     // Put path variables inline with {path}
                     val actualPath = if (handler.pathVars != null) {
                         var pathTransformed = handler.path
-                        val pathVariables = handler.pathVars.split("\n")
+                        handler.pathVars.split("\n")
                             .mapNotNull { line ->
-                                if (!line.contains(":")) null else line.trim().removeSuffix(",")
-                            }
-                            .map { nameType ->
-                                val (name, type) = nameType.split(": ");
-                                Pair(name, type)
-                            }
+                                if (!line.contains(":")) null else line.trim().removeSuffix(",").replace("?", "")
+                            }.map { nameType -> nameType.split(": ") }
                             .forEach { (name, type) ->
                                 pathTransformed = pathTransformed.replace("{${name}}", "{$name: $type}")
                             }
@@ -113,24 +115,54 @@ fun generateDocs(
                     } else {
                         handler.path
                     }
-                    outputMD.appendLine("#### ${handler.method} ${actualPath}\n")
+
+                    md.append("- ### ${handler.method} $actualPath")
 
                     if (handler.queryStringType != null) {
-                        outputMD.appendLine("`Query String`\n")
-                        outputMD.appendLine("```json\n${handler.queryStringType}\n```")
+                        md.append("?")
+                        val types = handler.queryStringType.split("\n")
+                            .mapNotNull { line ->
+                                if (!line.contains(":")) null else line.trim().removeSuffix(",").replace("?", "")
+                            }
+                            .map { nameType -> nameType.split(": ") }
+
+                        var i = 0
+                        for ((name, type) in types) {
+                            md.append("{$name: $type}")
+                            if (i != types.size - 1)
+                                md.append("&")
+                            i++
+                        }
                     }
+
+                    md.appendLine("\n")
+
                     if (handler.requestBodyType != null) {
-                        outputMD.appendLine("`Request Body`\n")
-                        outputMD.appendLine("```json\n${handler.requestBodyType}\n```")
+                        md.appendLine("#### Request Body\n")
+                        md.appendLine("```json\n${handler.requestBodyType}\n```")
                     }
-                    outputMD.appendLine("`Response Body`\n")
-                    outputMD.appendLine("```json\n${handler.successResponseType}\n```")
+
+                    md.appendLine("#### Response Body\n")
+                    md.appendLine("```json\n${handler.successResponseType}\n```")
+
+                    md.appendLine("#### Success Responses\n")
+                    if (handler.responseStatus == null) {
+                        md.appendLine("`200` OK\n")
+                    } else {
+                        handler.responseStatus.success.forEach { status ->
+                            md.appendLine("`${status.value()}` ${status.name}\n")
+                        }
+                        md.appendLine("#### Error Responses\n")
+                        handler.responseStatus.error.forEach { status ->
+                            md.appendLine("`${status.value()}` ${status.name}\n")
+                        }
+                    }
                 }
-                outputMD.appendLine("\n")
+                md.appendLine("\n")
             }
 
             File("${buildDirectory}/api-docs.md")
-                .writeText(outputMD.toString())
+                .writeText(md.toString())
 
             println("[API Documentation Generator] DONE | Output at: $buildDirectory")
         }
