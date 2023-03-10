@@ -1,10 +1,4 @@
 ```json
-CreateUserModel {
-	name: string 
-}
-```
-
-```json
 User {
 	createdAt: Date ,
 	id: string ,
@@ -17,6 +11,12 @@ ErrorFormat {
 	detail: string ,
 	internalCode: number ,
 	title: string 
+}
+```
+
+```json
+CreateUserModel {
+	name: string 
 }
 ```
 

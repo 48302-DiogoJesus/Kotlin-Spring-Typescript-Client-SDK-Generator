@@ -3,8 +3,10 @@ package kttsRPC.exampleAPI.controllers
 import kttsRPC.exampleAPI.controllers.errors.GlobalErrors
 import kttsRPC.exampleAPI.controllers.errors.UserErrors
 import kttsRPC.exampleAPI.utils.Uris
+import kttsRPC.types.ResponseStatus
 import kttsRPC.types.HandlerResponse
 import kttsRPC.types.HandlerResponseType
+import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.*
 import java.time.Instant
 import java.util.UUID
@@ -22,22 +24,29 @@ val USERS_DB: MutableMap<UUID, User> = mutableMapOf()
 @RequestMapping(Uris.Users.BASE)
 class Users {
 
+    @ResponseStatus(
+        // success = [OK] // is the default
+        error = [
+            HttpStatus.NOT_FOUND,
+            HttpStatus.UNPROCESSABLE_ENTITY
+        ]
+    )
     @GetMapping(Uris.Users.GET)
     fun get(
         // (name = "id") is not needed if the variable name is "id" instead of "userId"
         // Here it's just used to show it's possible
-        @PathVariable(name = "id") userId: String
+        @PathVariable(name = "id") userId: String,
     ): HandlerResponseType<User> {
         val uuid = UUID.fromString(userId)
             ?: return HandlerResponse.error(
-                400,
+                HttpStatus.UNPROCESSABLE_ENTITY,
                 GlobalErrors.INVALID_UUID
             )
 
         val user: User =
             USERS_DB[uuid]
                 ?: return HandlerResponse.error(
-                    404,
+                    HttpStatus.NOT_FOUND,
                     UserErrors.USER_NOT_FOUND_ERROR
                 )
 
@@ -46,13 +55,20 @@ class Users {
 
     data class CreateUserModel(val name: String)
 
+    @ResponseStatus(
+        success = [HttpStatus.CREATED],
+        error = [
+            HttpStatus.NOT_FOUND,
+            HttpStatus.UNPROCESSABLE_ENTITY
+        ]
+    )
     @PostMapping(Uris.Users.CREATE)
     fun create(
         @RequestBody user: Users.CreateUserModel
     ): HandlerResponseType<User> {
         if (user.name.length <= 4) {
             return HandlerResponse.error(
-                400,
+                HttpStatus.UNPROCESSABLE_ENTITY,
                 UserErrors.USER_NAME_LENGTH_ERROR
             )
         }
@@ -68,29 +84,35 @@ class Users {
         // Persist user
         USERS_DB[newUserId] = newUser
 
-        return HandlerResponse.success(newUser)
+        return HandlerResponse.success(newUser, HttpStatus.CREATED)
     }
 
+    @ResponseStatus(
+        success = [HttpStatus.NO_CONTENT],
+        error = [
+            HttpStatus.UNPROCESSABLE_ENTITY,
+            HttpStatus.NOT_FOUND
+        ]
+    )
     @DeleteMapping(Uris.Users.DELETE)
     fun delete(
         @PathVariable(name = "id") userId: String
     ): HandlerResponseType<Unit> {
         val uuid = UUID.fromString(userId)
             ?: return HandlerResponse.error(
-                400,
+                HttpStatus.UNPROCESSABLE_ENTITY,
                 GlobalErrors.INVALID_UUID
             )
 
-        val userToDelete: User =
-            USERS_DB[uuid]
-                ?: return HandlerResponse.error(
-                    404,
-                    UserErrors.USER_NOT_FOUND_ERROR
-                )
+        USERS_DB[uuid]
+            ?: return HandlerResponse.error(
+                HttpStatus.NOT_FOUND,
+                UserErrors.USER_NOT_FOUND_ERROR
+            )
 
         // Remove from DB
         USERS_DB.remove(uuid)
 
-        return HandlerResponse.success(Unit)
+        return HandlerResponse.success(Unit, HttpStatus.NO_CONTENT)
     }
 }

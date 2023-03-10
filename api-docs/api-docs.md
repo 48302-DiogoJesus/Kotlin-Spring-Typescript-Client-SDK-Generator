@@ -11,6 +11,24 @@ ErrorFormat {
 
 ### Users
 
+#### GET /api/users/{id: string}/{a: string}/{b: string}
+
+`Response Body`
+
+```json
+User {
+	createdAt: Date ,
+	id: string ,
+	name: string 
+}
+```
+#### DELETE /api/users/{id: string}
+
+`Response Body`
+
+```json
+void
+```
 #### POST /api/users/
 
 `Request Body`
@@ -29,53 +47,14 @@ User {
 	name: string 
 }
 ```
-#### DELETE /api/users/{id}
-
-`Path Variables`
-
-```json
-{
-	id: string
-}
-```
-`Response Body`
-
-```json
-void
-```
-#### GET /api/users/{id}
-
-`Path Variables`
-
-```json
-{
-	id: string
-}
-```
-`Response Body`
-
-```json
-User {
-	createdAt: Date ,
-	id: string ,
-	name: string 
-}
-```
 
 
 ---
 
 ### Posts
 
-#### GET /api/posts/{id}
+#### GET /api/posts/{id: string}
 
-`Path Variables`
-
-```json
-{
-	id: string
-}
-```
 `Response Body`
 
 ```json

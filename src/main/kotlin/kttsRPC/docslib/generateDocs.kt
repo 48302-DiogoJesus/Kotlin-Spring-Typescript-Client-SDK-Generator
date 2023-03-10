@@ -89,21 +89,35 @@ fun generateDocs(
             outputMD.appendLine("## Global Error Format\n")
             outputMD.appendLine("```json\n${errorResponseType}\n```")
 
-            // Build markdown docs
+            // Build Markdown docs
             for ((controllerName, controllerHandlers) in it) {
                 outputMD.appendLine("---\n")
                 outputMD.appendLine("### $controllerName\n")
 
                 for (handler in controllerHandlers) {
-                    outputMD.appendLine("#### ${handler.method} ${handler.path}\n")
+                    // Put path variables inline with {path}
+                    val actualPath = if (handler.pathVars != null) {
+                        var pathTransformed = handler.path
+                        val pathVariables = handler.pathVars.split("\n")
+                            .mapNotNull { line ->
+                                if (!line.contains(":")) null else line.trim().removeSuffix(",")
+                            }
+                            .map { nameType ->
+                                val (name, type) = nameType.split(": ");
+                                Pair(name, type)
+                            }
+                            .forEach { (name, type) ->
+                                pathTransformed = pathTransformed.replace("{${name}}", "{$name: $type}")
+                            }
+                        pathTransformed
+                    } else {
+                        handler.path
+                    }
+                    outputMD.appendLine("#### ${handler.method} ${actualPath}\n")
+
                     if (handler.queryStringType != null) {
                         outputMD.appendLine("`Query String`\n")
                         outputMD.appendLine("```json\n${handler.queryStringType}\n```")
-                    }
-                    // Put path variables inline with {path}
-                    if (handler.pathVars != null) {
-                        outputMD.appendLine("`Path Variables`\n")
-                        outputMD.appendLine("```json\n${handler.pathVars}\n```")
                     }
                     if (handler.requestBodyType != null) {
                         outputMD.appendLine("`Request Body`\n")

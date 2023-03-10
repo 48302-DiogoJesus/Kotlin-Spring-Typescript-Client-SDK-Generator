@@ -4,9 +4,13 @@
 
 - [ ] Authenticated Endpoints (Detected like in DAW)
 
-- [ ] Path Variables go inline with pathname
+- [ ] Improve readability of query params like path variables
+
+- [ ] Response should also have status code (use annotations). Code the builder
 
 ### RPC
+
+- [ ] Rename params to pathVariables
 
 - [ ] Ship as a jar and allow lib users to run only the generator without leaving the server running
 

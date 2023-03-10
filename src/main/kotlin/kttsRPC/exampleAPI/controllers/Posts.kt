@@ -1,12 +1,13 @@
 package kttsRPC.exampleAPI.controllers
 
-import io.swagger.v3.oas.annotations.responses.ApiResponse
 import kttsRPC.exampleAPI.controllers.errors.GlobalErrors
 import kttsRPC.exampleAPI.controllers.errors.PostErrors
 import kttsRPC.exampleAPI.controllers.errors.UserErrors
 import kttsRPC.exampleAPI.utils.Uris
 import kttsRPC.types.HandlerResponse
 import kttsRPC.types.HandlerResponseType
+import kttsRPC.types.ResponseStatus
+import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import java.time.Instant
@@ -34,9 +35,6 @@ class Posts {
      * ResponseEntity<Post> means you can only return responses where the body is User
      * Using ResponseEntity<HandlerResponse<Post, YourErrorFormat>> is an alternative we built
      * */
-    @ApiResponse(
-        description = "Testing get post documentation"
-    )
     @GetMapping(Uris.Posts.GET)
     fun get(
         @PathVariable id: String
@@ -59,26 +57,30 @@ class Posts {
 
     data class CreatePostModel(val title: String, val content: String?, val authorId: String)
 
+    @ResponseStatus(
+        success = [HttpStatus.CREATED],
+        error = [HttpStatus.UNPROCESSABLE_ENTITY, HttpStatus.NOT_FOUND]
+    )
     @PostMapping(Uris.Posts.CREATE)
     fun create(
         @RequestBody post: Posts.CreatePostModel
     ): HandlerResponseType<Post> {
         if (post.title.length <= 4 || (post.content != null && post.content.length <= 4))
             return HandlerResponse.error(
-                400,
+                HttpStatus.UNPROCESSABLE_ENTITY,
                 PostErrors.POST_PARAMS_LENGTH_ERROR
             )
 
         val authorUUID = UUID.fromString(post.authorId)
             ?: return HandlerResponse.error(
-                400,
+                HttpStatus.UNPROCESSABLE_ENTITY,
                 GlobalErrors.INVALID_UUID
             )
 
         val author: User =
             USERS_DB[authorUUID]
                 ?: return HandlerResponse.error(
-                    404,
+                    HttpStatus.NOT_FOUND,
                     UserErrors.USER_NOT_FOUND_ERROR
                 )
 
