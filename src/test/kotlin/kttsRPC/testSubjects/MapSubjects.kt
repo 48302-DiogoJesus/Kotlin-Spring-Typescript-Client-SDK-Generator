@@ -22,6 +22,6 @@ val queryTypeWithNullables = mapOf(
 
 const val QUERY_TYPE_W_NULLABLES_CONVERTED = "{\n" +
         "\tsearch: string,\n" +
-        "\torderAsc?: boolean,\n" +
-        "\tlimit?: number\n" +
+        "\torderAsc?: boolean | null,\n" +
+        "\tlimit?: number | null\n" +
         "}"
