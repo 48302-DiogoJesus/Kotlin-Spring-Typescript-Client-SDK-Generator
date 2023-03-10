@@ -1,8 +1,8 @@
-package kttsRPC.lib
+package kttsRPC.rpclib
 
-import kttsRPC.lib.types.HandlerMetadata
-import kttsRPC.lib.types.TypeName
-import kttsRPC.lib.utils.TSTypesGenerator
+import kttsRPC.types.HandlerMetadata
+import kttsRPC.types.TypeName
+import kttsRPC.utils.TSTypesGenerator
 import java.io.File
 
 fun writeTypesFile(handlersMetadata: List<HandlerMetadata>, typesFilePath: String): Set<TypeName> {

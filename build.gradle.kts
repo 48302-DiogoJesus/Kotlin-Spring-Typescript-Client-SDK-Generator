@@ -1,5 +1,6 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
+
 plugins {
     id("org.springframework.boot") version "3.0.3"
     id("io.spring.dependency-management") version "1.1.0"
@@ -16,6 +17,9 @@ repositories {
 }
 
 dependencies {
+    implementation("javax.servlet:javax.servlet-api:4.0.1")
+    implementation("io.springfox:springfox-boot-starter:3.0.0")
+
     implementation("org.springframework.boot:spring-boot-starter-validation")
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")

@@ -1,10 +1,10 @@
-package kttsRPC.lib
+package kttsRPC.rpclib
 
-import kttsRPC.lib.types.HandlerMetadata
-import kttsRPC.lib.types.TypeName
-import kttsRPC.lib.utils.BuildTSFunctionHandlerMD
-import kttsRPC.lib.utils.ExtendedTypeInformation
-import kttsRPC.lib.utils.buildTSFunction
+import kttsRPC.types.HandlerMetadata
+import kttsRPC.types.TypeName
+import kttsRPC.utils.BuildTSFunctionHandlerMD
+import kttsRPC.utils.ExtendedTypeInformation
+import kttsRPC.utils.buildTSFunction
 import java.io.File
 
 fun writeSDKFile(

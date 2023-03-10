@@ -1,4 +1,4 @@
-package kttsRPC.lib
+package kttsRPC.rpclib
 
 import java.io.File
 

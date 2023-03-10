@@ -1,6 +1,7 @@
-package kttsRPC.lib.utils
+package kttsRPC.utils
 
-import kttsRPC.lib.types.TypeName
+import kttsRPC.types.TypeName
+import java.lang.reflect.ParameterizedType
 import java.sql.Date
 import java.sql.Timestamp
 import java.time.Instant
@@ -9,6 +10,8 @@ import kotlin.reflect.KClass
 import kotlin.reflect.KType
 import kotlin.reflect.full.createType
 import kotlin.reflect.full.memberProperties
+import kotlin.reflect.full.starProjectedType
+import kotlin.reflect.jvm.jvmErasure
 
 /**
  * Something that can:
@@ -23,9 +26,6 @@ class TSTypesGenerator() {
         val typesCreated: Map<TypeName, String>
     )
 
-    /**
-     * Currently used for 1 level maps: + params/path variables
-     * */
     fun fromMap(
         map: Map<String, KType>,
         typeName: String? = null
@@ -38,7 +38,7 @@ class TSTypesGenerator() {
 
         return ConversionResult(
             if (typeName == null) {
-                "{$properties}"
+                "{\n$properties\n}"
             } else {
                 "export interface $typeName {$properties}"
             },
@@ -59,10 +59,10 @@ class TSTypesGenerator() {
     }
 
     private fun convertKClassInternal(
-        kotlinClass: KClass<*>,
+        klass: KClass<*>,
         finalInterfaceName: String? = null
     ): String {
-        val className = kotlinClass.simpleName
+        val className = klass.simpleName
             ?: finalInterfaceName
             ?: throw Error("Class with no name tried to be converted")
 
@@ -70,8 +70,10 @@ class TSTypesGenerator() {
         if (cachedType != null)
             return cachedType
 
-        val properties = kotlinClass.memberProperties.joinToString(",\n") {
+        val properties = klass.memberProperties.joinToString(",\n") {
             val propertyType = it.returnType
+            // prop ?: string | null || Using both undefined and null to allow developer to express itself
+            // better by passing null instead of undefined or nothing
             val propertyTypeName =
                 "${convertKTypeToTSType(propertyType)} ${
                     if (propertyType.isMarkedNullable) "| null" else ""
@@ -98,6 +100,7 @@ class TSTypesGenerator() {
             Double::class -> "number"
             Byte::class -> "number"
             Boolean::class -> "boolean"
+            Unit::class -> "void"
             List::class -> {
                 val nestedType = type.arguments.firstOrNull()?.type ?: return "any[]"
                 if (nestedType.isMarkedNullable) {
@@ -142,6 +145,7 @@ fun isUserType(type: KClass<*>): Boolean {
         Double::class -> false
         Byte::class -> false
         Boolean::class -> false
+        Unit::class -> false
         List::class -> false
         Map::class -> false
         else -> true

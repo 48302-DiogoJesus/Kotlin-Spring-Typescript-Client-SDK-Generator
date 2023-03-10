@@ -1,27 +1,39 @@
-export const tsDontComplain: never;
-
-export interface CreateUserModel {
+```json
+CreateUserModel {
 	name: string 
 }
-export interface User {
+```
+
+```json
+User {
 	createdAt: Date ,
 	id: string ,
 	name: string 
 }
-export interface ErrorFormat {
+```
+
+```json
+ErrorFormat {
 	detail: string ,
 	internalCode: number ,
 	title: string 
 }
-export interface Post {
+```
+
+```json
+Post {
 	author: User ,
 	content?: string | null,
 	createdAt: Date ,
 	id: string ,
 	title: string 
 }
-export interface CreatePostModel {
+```
+
+```json
+CreatePostModel {
 	authorId: string ,
 	content?: string | null,
 	title: string 
 }
+```

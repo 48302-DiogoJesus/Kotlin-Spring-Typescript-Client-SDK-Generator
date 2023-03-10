@@ -1,4 +1,4 @@
-package kttsRPC.lib.types
+package kttsRPC.types
 
 import kttsRPC.exampleAPI.utils.ErrorFormat
 import org.springframework.http.ResponseEntity

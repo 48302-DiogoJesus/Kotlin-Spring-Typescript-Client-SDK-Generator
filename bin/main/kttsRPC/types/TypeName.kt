@@ -1,3 +1,3 @@
-package kttsRPC.lib.types
+package kttsRPC.types
 
 typealias TypeName = String

@@ -1,4 +1,4 @@
-package kttsRPC.lib.types
+package kttsRPC.types
 
 import org.springframework.web.bind.annotation.RequestMethod
 import kotlin.reflect.KClass

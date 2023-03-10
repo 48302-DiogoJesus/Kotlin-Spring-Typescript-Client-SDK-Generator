@@ -1,6 +1,6 @@
-package kttsRPC.lib
+package kttsRPC.rpclib
 
-import kttsRPC.lib.types.HandlerMetadata
+import kttsRPC.types.HandlerMetadata
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestParam

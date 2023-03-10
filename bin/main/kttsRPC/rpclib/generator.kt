@@ -1,9 +1,8 @@
-package kttsRPC.lib
+package kttsRPC.rpclib
 
-import kttsRPC.lib.types.TypeName
+import kttsRPC.types.TypeName
 import org.springframework.web.servlet.mvc.method.RequestMappingInfoHandlerMapping
 import java.io.File
-import java.util.*
 
 fun generateTypescriptSDKFromSpringHandlers(
     requestMappingHandlerMapping: RequestMappingInfoHandlerMapping,
@@ -36,4 +35,6 @@ fun generateTypescriptSDKFromSpringHandlers(
         else
             null // means lib user did not
     )
+
+    println("[RPC SDK Generator] DONE | Output at: $buildDirectory")
 }
