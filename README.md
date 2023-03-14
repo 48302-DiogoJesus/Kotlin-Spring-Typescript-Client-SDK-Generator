@@ -1,4 +1,4 @@
-# Kotlin Spring API Client SDK generator
+# Typescript Client SDK Generator for Kotlin Spring APIs 
 
 > This library uses kotlin reflection to build a Client SDK from a Spring Web API, helping the client to be keep
 > up to date and catch typing errors before runtime. It also helps client-side developers to move faster
