@@ -1,13 +1,5 @@
 # TODO
 
-- [ ] Separate libs into 2 projects
-
-### DOCS
-
-- [ ] Authenticated Endpoints (Detected like in DAW)
-
-### RPC
-
 - [ ] Rename params to pathVariables
 
 - [ ] Ship as a jar and allow lib users to run only the generator without leaving the server running

@@ -1,6 +1,5 @@
-package kttsRPC.rpclib
+package kttsRPC.utils
 
-import io.swagger.models.Response
 import kttsRPC.types.HandlerMetadata
 import kttsRPC.types.ResponseStatus
 import org.springframework.web.bind.annotation.PathVariable

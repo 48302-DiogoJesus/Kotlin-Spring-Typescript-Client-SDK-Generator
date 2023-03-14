@@ -1,5 +1,10 @@
 export const tsDontComplain: never;
 
+export interface CreatePostModel {
+	authorId: string ,
+	content?: string | null,
+	title: string 
+}
 export interface User {
 	createdAt: Date ,
 	id: string ,
@@ -15,11 +20,6 @@ export interface Post {
 export interface ErrorFormat {
 	detail: string ,
 	internalCode: number ,
-	title: string 
-}
-export interface CreatePostModel {
-	authorId: string ,
-	content?: string | null,
 	title: string 
 }
 export interface CreateUserModel {

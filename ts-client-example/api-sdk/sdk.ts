@@ -4,19 +4,6 @@ import { replacePathAndQueryVariables } from "./Utils";
 
 export default function BuildSDK(apiBaseUrl: string) { return {
 	posts: {
-		get: (args: { 
-	
-	id: string 
-,
-}): Promise<UserTypes.Post> => 
-	fetch(
-		replacePathAndQueryVariables(`${apiBaseUrl}/api/posts/{id}`, args, undefined),
-		{
-			method: "GET",
-		}
-	)
-		.then(res => res.json())
-,
 		create: (args: { 
 	} & UserTypes.CreatePostModel
 ): Promise<HandlerResponse<UserTypes.Post, UserTypes.ErrorFormat>> => 
@@ -30,30 +17,30 @@ export default function BuildSDK(apiBaseUrl: string) { return {
 	)
 		.then(res => res.json())
 ,
+		get: (args: { 
+	
+	id: string
+,
+}): Promise<UserTypes.Post> => 
+	fetch(
+		replacePathAndQueryVariables(`${apiBaseUrl}/api/posts/{id}`, args, undefined),
+		{
+			method: "GET",
+		}
+	)
+		.then(res => res.json())
+,
 	},
 	users: {
 		delete: (args: { 
 	
-	id: string 
+	id: string
 ,
 }): Promise<HandlerResponse<void, UserTypes.ErrorFormat>> => 
 	fetch(
 		replacePathAndQueryVariables(`${apiBaseUrl}/api/users/{id}`, args, undefined),
 		{
 			method: "DELETE",
-		}
-	)
-		.then(res => res.json())
-,
-		get: (args: { 
-	
-	id: string 
-,
-}): Promise<HandlerResponse<UserTypes.User, UserTypes.ErrorFormat>> => 
-	fetch(
-		replacePathAndQueryVariables(`${apiBaseUrl}/api/users/{id}`, args, undefined),
-		{
-			method: "GET",
 		}
 	)
 		.then(res => res.json())
@@ -67,6 +54,19 @@ export default function BuildSDK(apiBaseUrl: string) { return {
 			method: "POST",
 			headers: {"Content-Type": "application/json"},
 			body: JSON.stringify(args)
+		}
+	)
+		.then(res => res.json())
+,
+		get: (args: { 
+	
+	id: string
+,
+}): Promise<HandlerResponse<UserTypes.User, UserTypes.ErrorFormat>> => 
+	fetch(
+		replacePathAndQueryVariables(`${apiBaseUrl}/api/users/{id}`, args, undefined),
+		{
+			method: "GET",
 		}
 	)
 		.then(res => res.json())

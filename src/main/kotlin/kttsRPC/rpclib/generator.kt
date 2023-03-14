@@ -1,6 +1,7 @@
 package kttsRPC.rpclib
 
 import kttsRPC.types.TypeName
+import kttsRPC.utils.buildHandlersMetadata
 import org.springframework.web.servlet.mvc.method.RequestMappingInfoHandlerMapping
 import java.io.File
 

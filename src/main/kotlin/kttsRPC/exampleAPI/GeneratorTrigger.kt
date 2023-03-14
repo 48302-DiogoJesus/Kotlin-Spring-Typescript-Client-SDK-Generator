@@ -1,6 +1,5 @@
 package kttsRPC.exampleAPI
 
-import kttsRPC.docslib.generateDocs
 import kttsRPC.rpclib.generateTypescriptSDKFromSpringHandlers
 import org.springframework.stereotype.Component
 import org.springframework.web.servlet.mvc.method.RequestMappingInfoHandlerMapping
@@ -16,10 +15,6 @@ class TypescriptSDKGenerator(requestMappingHandlerMapping: RequestMappingInfoHan
         generateTypescriptSDKFromSpringHandlers(
             requestMappingHandlerMapping,
             buildDirectory = "./ts-client-example/api-sdk"
-        )
-        generateDocs(
-            requestMappingHandlerMapping,
-            buildDirectory = "./api-docs"
         )
     }
 }

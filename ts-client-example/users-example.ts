@@ -1,5 +1,4 @@
 import BuildSDK from "./api-sdk/sdk";
-import { ErrorFormat } from "./api-sdk/UserTypes";
 
 /**
  * Same as:

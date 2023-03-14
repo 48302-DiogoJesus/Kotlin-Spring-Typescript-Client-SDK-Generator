@@ -18,26 +18,13 @@ repositories {
 
 dependencies {
     implementation("javax.servlet:javax.servlet-api:4.0.1")
-    implementation("io.springfox:springfox-boot-starter:3.0.0")
 
     implementation("org.springframework.boot:spring-boot-starter-validation")
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
-    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
-    implementation("com.google.code.gson:gson:2.8.5")
-
-    implementation("org.springframework.security:spring-security-core:5.7.3")
-
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.1")
-
-    implementation("org.markdownj:markdownj:0.3.0-1.0.2b4")
-
-    implementation("io.projectreactor:reactor-core:3.4.23")
 
     testImplementation("org.springframework.boot:spring-boot-starter-test")
-    testImplementation("org.junit.jupiter:junit-jupiter:5.4.0")
-    testImplementation("org.springframework.boot:spring-boot-starter-webflux")
 
     testImplementation(kotlin("test"))
 }
