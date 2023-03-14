@@ -1,1 +1,1 @@
-rootProject.name = "kttsRPC"
+rootProject.name = "clientSdkGenerator"

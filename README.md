@@ -1,10 +1,8 @@
-# sk-tsRPC (Spring/Kotlin - TypeScript Remote Procedure Call)
+# Kotlin Spring API Client SDK generator
 
-## Spring Web API(Kotlin) Typescript Client SDK builder
-
-This library uses reflection to build a Client SDK from a Spring Web API, helping the client to be keep
-up to date and catch typing errors before runtime. It also helps client-side developers to move faster
-if using a Typescript LSP in your IDE due to fields suggestions.
+> This library uses kotlin reflection to build a Client SDK from a Spring Web API, helping the client to be keep
+> up to date and catch typing errors before runtime. It also helps client-side developers to move faster
+> if using a Typescript LSP in your IDE due to fields suggestions.
 
 ### On the Server (Kotlin)
 
